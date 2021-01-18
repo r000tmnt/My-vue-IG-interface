@@ -1,0 +1,128 @@
+<template v-model="$store.state.basic">
+<div class="top_frame">
+  <div id="fromData">
+      <div id="profile" class="flex">
+        <div class="profile_pic">
+          <img :src="$store.state.basic.profile_pic" alt="Not Found">
+        </div>
+
+          <div class="biography">
+             <h1>{{$store.state.basic.userName}}</h1>
+            <h4>{{$store.state.basic.bio}}
+              <a :href="$store.state.basic.web">{{$store.state.basic.web}}</a> 
+            </h4>
+          </div>
+      </div>
+
+       <ul class="counts flex">
+            <li><h4>追蹤:{{$store.state.basic.follower}}</h4></li>
+            <li><h4>追蹤者:{{$store.state.basic.followed}}</h4></li>
+            <li><h4>上傳:{{$store.state.basic.medias}}</h4></li>
+       </ul>
+
+       <ul class="sections flex">
+         <li><button class="post" @click="viewPosts()">上傳</button></li>
+         <li><button class="story" @click="viewStroies()">限時動態</button></li>
+       </ul>
+          
+  </div>
+</div>
+
+</template>
+
+<script>
+export default {
+  name: 'basicInfo',
+  props: {
+  },
+  methods: {
+    viewPosts(){
+      this.$parent.viewStroy = false; 
+      console.log(this.$parent.viewStroy)
+    },
+
+    viewStroies(){
+      this.$parent.viewStroy = true;
+      console.log(this.$parent.viewStroy) 
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.flex{
+  display: flex;
+}
+
+.top_frame{
+  /* border: 1px solid red; */
+  background-color: rgb(240, 240, 240);
+}
+
+#fromData{
+  margin: 0 auto;
+  width: 75vw;
+}
+
+#profile{
+  justify-content: center;
+  padding: 1%;
+}
+
+.profile_pic {
+  border: 2px solid #232;
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  margin: 0 2vw 0 0;
+}
+
+.profile_pic > img{
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.biography{
+  width: 20%;
+}
+
+h4 > a{
+  text-decoration: none;
+  color: steelblue;
+}
+
+a:hover{
+  color: slateblue;
+}
+
+.counts{
+  width: 20vw;
+  margin: 0 auto;
+}
+
+ul > li{
+  list-style: none;
+  margin:0 1vw;
+}
+
+.sections{
+  width: 15vw;
+  margin: 0 auto;
+  padding: 1vh 0;
+  border-top: 1px solid #232;
+}
+
+.sections > li > button{
+  border: none;
+  color: steelblue;
+  cursor: pointer;
+}
+
+.sections > li:hover{
+  color: white;
+  background-color: #232;
+  transition: 0.5s;
+}
+</style>
