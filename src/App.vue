@@ -115,12 +115,12 @@ export default {
     getMedias(vm, IGid, acToken){
       window.FB.api(
         IGid+"/media",
-        {"fields":"media_url,caption,like_count,comments_count,timestamp,comments{id,username,media,text,timestamp,replies}", "access_token": acToken},
+        {"fields":"media_url,caption,like_count,comments_count,timestamp", "access_token": acToken},
         function(src){
           console.log(src);
 
           var pics = new Array();
-          var c_ids = new Array();
+         
           
           for(let i=0; i < src.data.length; i++){
             pics.push(
@@ -130,29 +130,50 @@ export default {
                 caption: src.data[i].caption,
                 comments: src.data[i].comments_count,
                 time: src.data[i].timestamp});
-
-                if(src.data[i].comments != null){ //Check if commemts exist
-                  c_ids.push(src.data[i].comments.data[i-i]);
-                }
           }
             vm.media_urls = pics;
-            vm.getComments(vm, c_ids);
+            vm.getComments(vm, IGid, acToken);
             vm.hideImages(vm);
-            console.log(c_ids)
         });
     },
 
-    getComments(vm, c_ids){
+    getComments(vm, IGid, acToken){
       var cArray = new Array();
-      for(let i=0; i < c_ids.length; i++){
-        cArray.push({id: c_ids[i].media.id,
-                     text: c_ids[i].text,
-                     time: c_ids[i].timestamp,
-                     userName: c_ids[i].username
-                    });                                                
-      }
-      vm.$store.state.media_comments = cArray;
-      console.log(cArray)
+      var sortComment = new Array();
+      var multiComment = new Array();
+      var oneComment = new Array();
+      window.FB.api(
+        IGid+'/media',
+        {"fields":"comments{id,username,media,text,timestamp,replies}",  "access_token": acToken},
+        function(cData){
+          console.log(cData);
+
+          for(let i=0; i < cData.data.length; i++){
+            if(cData.data[i].comments){
+              cArray.push(cData.data[i].comments);
+            }
+          }
+          console.log(cArray)
+
+          for(let i=0; i < cArray.length; i++){//filter out the media with multiple comments
+              if(cArray[i].data.length > 1){
+                multiComment = cArray[i].data;
+              }else{
+                oneComment = cArray[i].data;
+              }
+          }
+
+          for(let i=0; i < multiComment.length; i++){
+            sortComment.push(multiComment[i]);
+          }
+          
+          for(let i=0; i < oneComment.length; i++){
+            sortComment.push(oneComment[i]);
+          }
+          console.log(sortComment);
+          vm.$store.state.media_comments = sortComment;
+        }
+      )
     },
  
     hideImages(vm){

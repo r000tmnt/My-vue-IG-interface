@@ -35,6 +35,14 @@
         </div>
       </section>
         
+        <!-- FB.api(
+  '/17862220559338887/comments',
+  'POST',
+  {"message":"Is this possible?"},
+  function(response) {
+      // Insert your code here
+  }
+); -->
         
       </div>
     </div>
@@ -54,6 +62,8 @@ export default {
     closeModal(){
       this.$parent.isViewing = false;
       this.$parent.gotComment = false; //make sure to close it
+
+      this.$parent.theMediaComment.splice(0, this.$parent.theMediaComment.length); //clear props
 
       var body = document.body;
       body.removeAttribute("class", "modal-open");

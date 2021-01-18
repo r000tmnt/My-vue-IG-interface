@@ -47,21 +47,20 @@ export default {
 
       var theComment = new Array();
       for(let i=0; i < n.comments; i++){
-        if(n.id === this.$store.state.media_comments[i].id){ //Check if both id matches
+        if(n.id === this.$store.state.media_comments[i].media.id){ //Check if both id matches
           this.gotComment = true
-          var theTime = new Date(this.$store.state.media_comments[i].time).getTime(); //Get time code
+          var theTime = new Date(this.$store.state.media_comments[i].timestamp).getTime(); //Get time code
           var whatime = new Date(theTime).toDateString()//Convert to human readable time
           
 
-          theComment.push({id: this.$store.state.media_comments[i].id, //Push the info of the comment
-                           userName: this.$store.state.media_comments[i].userName,
+          theComment.push({id: this.$store.state.media_comments[i].media.id, //Push the info of the comment
+                           userName: this.$store.state.media_comments[i].username,
                            text: this.$store.state.media_comments[i].text,
                            time: whatime});
-          this.theMediaComment = theComment;
-        }else{
-          this.theMediaComment.splice(0, this.theMediaComment.length); //clear props if no matches
         }
       }
+      this.theMediaComment = theComment;
+
       console.log(n.id, this.theMediaComment.length)                    
       const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
       var body = document.querySelector("body");
