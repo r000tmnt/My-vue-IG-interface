@@ -21,7 +21,7 @@
        </ul>
 
        <ul class="sections flex">
-         <li><button class="post" @click="viewPosts()">上傳</button></li>
+         <li><button class="post" @click="viewPosts()">貼文</button></li>
          <li><button class="story" @click="viewStroies()">限時動態</button></li>
        </ul>
           
@@ -37,13 +37,13 @@ export default {
   },
   methods: {
     viewPosts(){
-      this.$parent.viewStroy = false; 
-      console.log(this.$parent.viewStroy)
+      this.$parent.viewPost = true; 
+      console.log(this.$parent.viewPost)
     },
 
     viewStroies(){
-      this.$parent.viewStroy = true;
-      console.log(this.$parent.viewStroy) 
+      this.$parent.viewPost = false;
+      console.log(this.$parent.viewPost) 
     }
   }
 }

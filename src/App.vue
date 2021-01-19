@@ -2,8 +2,8 @@
 
   <header> My Vue-IG-Interface</header>
   <basicInfo></basicInfo>
-  <display-medias v-if="viewStory === false" :urls="media_urls"></display-medias>
-  <displayStories v-if="viewStory === true"></displayStories>
+  <display-medias v-if="viewPost" :urls="media_urls"></display-medias>
+  <displayStories v-if="viewPost === false"></displayStories>
 
 </template>
 
@@ -28,7 +28,7 @@ export default {
           // id: "", url: "", caption: "", time: ""
         },
 
-        viewStory: false
+        viewPost: true
     }
   },
   methods: {

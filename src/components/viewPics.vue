@@ -36,15 +36,6 @@
         </div>
       </section>
         
-        <!-- FB.api(
-  '/17862220559338887/comments',
-  'POST',
-  {"message":"Is this possible?"},
-  function(response) {
-      // Insert your code here
-  }
-); -->
-        
       </div>
     </div>
   </div>
@@ -69,6 +60,7 @@ export default {
         {"message": newComment.value},
         function(response){
           console.log(response);
+          newComment.value = ''; //Clear input
         }
       )
     },
