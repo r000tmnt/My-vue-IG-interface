@@ -53,7 +53,8 @@ export default {
           var whatime = new Date(theTime).toDateString()//Convert to human readable time
           
 
-          theComment.push({id: this.$store.state.media_comments[i].media.id, //Push the info of the comment
+          theComment.push({mediaID: this.$store.state.media_comments[i].media.id, //Push the info of the comment
+                           id: this.$store.state.media_comments[i].id,
                            userName: this.$store.state.media_comments[i].username,
                            text: this.$store.state.media_comments[i].text,
                            time: whatime});
@@ -61,7 +62,7 @@ export default {
       }
       this.theMediaComment = theComment;
 
-      console.log(n.id, this.theMediaComment.length)                    
+      console.log(n.id, this.theMediaComment)                    
       const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
       var body = document.querySelector("body");
       body.setAttribute("class", "modal-open");

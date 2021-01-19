@@ -29,8 +29,9 @@
 
       <section v-show="$parent.gotComment === true">
         <div class="vistor" v-for="n in mediaComment" :key="n.id">
-          <h4>{{n.userName}}: {{n.text}}
+          <h4 class="comment">{{n.userName}}: {{n.text}}
             <small>{{n.time}}</small>
+            <button class="del" @click="deleteComment">X</button>
           </h4>
         </div>
       </section>
@@ -70,6 +71,27 @@ export default {
           console.log(response);
         }
       )
+    },
+
+    deleteComment(){
+      var comments = document.getElementsByClassName("comment");
+      var vm = this;
+      for(let i=0; i < comments.length; i++){
+        let ask = confirm('您希望刪除'+vm.mediaComment[i].text+'這個留言嗎?')
+
+        if(ask){
+          window.FB.api(
+            vm.mediaComment[i].id,
+            'DELETE',
+            function(responseDEL){
+              console.log(responseDEL);
+            }
+          )
+        }else{
+          console.log("好險沒刪掉...")
+        }
+        
+      }
     },
 
     closeModal(){
@@ -157,7 +179,35 @@ export default {
     padding: 1vh 0 0 0;
   }
 
+  section{
+    background-color: #232;
+  }
+
+  .vistor > h4{
+    border: 1px solid #232;
+  }
+
   .vistor > h4 > small{
     opacity: 0.5;
+  }
+  
+  .vistor > h4 > button{
+    float: right;
+    margin-left: 1vw;
+    background: none;
+    border-radius: 50%;
+    border: none;
+    color: #FF2400;
+    cursor: pointer;
+  }
+
+  h4.comment:hover{
+    border: 1px solid white;
+    transition: 0.5s;
+  }
+
+  h4 > button:hover{
+    color: white;
+    transition: 0.5s;
   }
 </style>
