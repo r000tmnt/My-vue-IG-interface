@@ -23,7 +23,7 @@
     </div>
 
     <div class="comments">
-      留言<input type="text">
+      留言<input type="text" id="pushNew" @keydown.enter="pushComment">
 
       <div class="comment_list">
 
@@ -59,6 +59,19 @@ export default {
     mediaComment: {}
   },
   methods: {
+    pushComment(){
+      var newComment = document.getElementById('pushNew');
+      var vm = this;
+      window.FB.api(
+        vm.media.id+'/comments',
+        'POST',
+        {"message": newComment.value},
+        function(response){
+          console.log(response);
+        }
+      )
+    },
+
     closeModal(){
       this.$parent.isViewing = false;
       this.$parent.gotComment = false; //make sure to close it
