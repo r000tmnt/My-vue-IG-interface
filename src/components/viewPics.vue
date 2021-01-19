@@ -31,7 +31,7 @@
         <div class="vistor" v-for="n in mediaComment" :key="n.id">
           <h4 class="comment">{{n.userName}}: {{n.text}}
             <small>{{n.time}}</small>
-            <button class="del" @click="deleteComment">X</button>
+            <button class="del" @click="deleteComment(n)">X</button>
           </h4>
         </div>
       </section>
@@ -73,25 +73,20 @@ export default {
       )
     },
 
-    deleteComment(){
-      var comments = document.getElementsByClassName("comment");
-      var vm = this;
-      for(let i=0; i < comments.length; i++){
-        let ask = confirm('您希望刪除'+vm.mediaComment[i].text+'這個留言嗎?')
+    deleteComment(n){
+      let ask = confirm('您希望刪除 '+n.text+' 這個留言嗎?')
 
-        if(ask){
+      if(ask){
           window.FB.api(
-            vm.mediaComment[i].id,
-            'DELETE',
-            function(responseDEL){
-              console.log(responseDEL);
-            }
-          )
-        }else{
+          n.id,
+          'DELETE',
+          function(responseDEL){
+            console.log(responseDEL);
+          }
+        )
+      }else{
           console.log("好險沒刪掉...")
         }
-        
-      }
     },
 
     closeModal(){
