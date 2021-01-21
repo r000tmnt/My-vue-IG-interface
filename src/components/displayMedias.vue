@@ -46,7 +46,9 @@ export default {
                            time: n.time};
 
       var theComment = new Array();
-      for(let i=0; i < n.comments; i++){
+      var Clength = this.$store.state.media_comments.length;
+
+      for(let i=0; i < Clength; i++){
         if(n.id === this.$store.state.media_comments[i].media.id){ //Check if both id matches
           this.gotComment = true
           var theTime = new Date(this.$store.state.media_comments[i].timestamp).getTime(); //Get time code
@@ -76,17 +78,37 @@ export default {
 
     showMore(){
       var medias = document.querySelectorAll(".medias");
-      console.log(medias)
+      var isHidden = [];
+      for(let i=0; i < medias.length; i++){  
 
-      for(let i=0; i < medias.length; i++){
         if(medias[i].style.display === 'none'){
-          medias[i].style.display = 'block';
-          medias[i].classList.add("fadeIN")
+          isHidden.push(medias[i]);
+          
+          if(isHidden.length > 9){ //if there's more, only reveal next 9 images
+            for(let j=0; j < 9; j++){
+              isHidden[i].style.display = 'block';
+              isHidden[i].classList.add("fadeIN");
+            }
           window.scrollTo({ //move to the bottom of screen
             top: document.body.scrollHeight,
             behavior: "smooth"});
+          }
+          
+          if(isHidden.length < 9){ //if there's less than 9, show the rest.
+            medias[i].style.display = 'block';
+            medias[i].classList.add("fadeIN")
+            window.scrollTo({ //move to the bottom of screen
+            top: document.body.scrollHeight,
+            behavior: "smooth"});
+          }
         }
+
+        if(isHidden.length === 0){ //if there's nothing more, hide the button
+            let button = document.querySelector(".showMore");
+            button.style['visibility'] = 'hidden';
+          }
       }
+      console.log(isHidden)
     }
   }
 }
@@ -132,6 +154,13 @@ export default {
   border-radius: 10px;
   width: 10vw;
   height: 5v;
-  font-size: 1.2rem
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.showMore:hover{
+  background-color: rgba(34, 51, 34, 0.75);
+  color: white;
+  transition: 0.5s;
 }
 </style>

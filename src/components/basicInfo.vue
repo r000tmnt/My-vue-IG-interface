@@ -49,6 +49,7 @@ export default {
     ishereHover(){
       var post = document.querySelector(".post");
       var story = document.querySelector(".story")
+      
       if(post.classList.contains("here")){
         post.classList.remove("here")
         story.classList.add("here")
