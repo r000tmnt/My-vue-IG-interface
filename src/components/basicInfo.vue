@@ -21,8 +21,8 @@
        </ul>
 
        <ul class="sections flex">
-         <li><button class="post" @click="viewPosts()">貼文</button></li>
-         <li><button class="story" @click="viewStroies()">限時動態</button></li>
+         <li><button class="post here" @click="viewPosts()" @mouseover="ishereHover">貼文</button></li>
+         <li><button class="story" @click="viewStroies()" @mouseover="ishereHover">限時動態</button></li>
        </ul>
           
   </div>
@@ -44,6 +44,18 @@ export default {
     viewStroies(){
       this.$parent.viewPost = false;
       console.log(this.$parent.viewPost) 
+    },
+
+    ishereHover(){
+      var post = document.querySelector(".post");
+      var story = document.querySelector(".story")
+      if(post.classList.contains("here")){
+        post.classList.remove("here")
+        story.classList.add("here")
+      }else if(story.classList.contains("here")){
+        story.classList.remove("here")
+        post.classList.add("here")
+      }
     }
   }
 }
@@ -51,6 +63,24 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+@keyframes ishere{
+  from{ transform: translateX(0px); }
+  to{ transform: translateX(-3px); }
+}
+
+.here{
+  color:goldenrod!important;
+}
+
+.here::before{
+  content: ">";
+  color: #232;
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: bold;
+  animation: ishere 1s ease-in-out infinite alternate-reverse !important;
+}
+
 .flex{
   display: flex;
 }

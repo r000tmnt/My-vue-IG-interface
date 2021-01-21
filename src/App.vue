@@ -183,6 +183,7 @@ export default {
         for(let i=0; i < images.length; i++){
           if(i > 8){
             images[i].style['display'] = 'none';
+            images[i].style['opacity'] = 0;
           }
         }
       });

@@ -90,9 +90,9 @@ export default {
       var body = document.body;
       body.removeAttribute("class", "modal-open");
 
-      const scrollY = body.style.top; //fix the positon at the top of the screen
+      // const scrollY = body.style.top; //fix the positon at the top of the screen
       body.style.position = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);   
+      // window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
   }
 }

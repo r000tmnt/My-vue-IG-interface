@@ -1,7 +1,7 @@
 <template>
 <div class="frame">
   <div id="photos">
-      <div :id="n.id" class="medias" v-for="n in urls" :key="n" :style="{ 
+      <div class="medias" v-for="n in urls" :key="n" :style="{ 
         'background-image': 'url(' + n.url + ')', 
         'background-size': 'cover',
         'background-position':'center'}" @click="viewing(n)">
@@ -12,7 +12,7 @@
 </div>
 
     <div class="more">
-      <button class="showMore">更多</button>
+      <button class="showMore" @click="showMore()">更多</button>
     </div>
 </template>
 
@@ -64,10 +64,29 @@ export default {
 
       console.log(n.id, this.theMediaComment)                    
       const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-      var body = document.querySelector("body");
-      body.setAttribute("class", "modal-open");
-      // body.style.position = 'fixed';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+
+      this.$nextTick(()=>{
+        var modal = document.querySelector(".modal");
+        var body = document.querySelector("body");
+        body.setAttribute("class", "modal-open");
+        // body.style.position = 'fixed';
+        modal.style['margin-top'] = `${scrollY}`; //push modal to the screen positon
+      })      
+    },
+
+    showMore(){
+      var medias = document.querySelectorAll(".medias");
+      console.log(medias)
+
+      for(let i=0; i < medias.length; i++){
+        if(medias[i].style.display === 'none'){
+          medias[i].style.display = 'block';
+          medias[i].classList.add("fadeIN")
+          window.scrollTo({ //move to the bottom of screen
+            top: document.body.scrollHeight,
+            behavior: "smooth"});
+        }
+      }
     }
   }
 }
@@ -75,6 +94,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+@keyframes fadeIN{
+  from{ opacity: 0; }
+  to{ opacity: 1; }
+}
+
+.fadeIN{
+  animation: fadeIN 2s ease-in-out forwards !important;
+}
+
 #photos{
   display: flex;
   flex-wrap: wrap;
