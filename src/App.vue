@@ -3,7 +3,7 @@
   <header> My Vue-IG-Interface</header>
   <basicInfo></basicInfo>
   <display-medias v-if="viewPost" :urls="media_urls"></display-medias>
-  <displayStories v-if="viewPost === false"></displayStories>
+  <displayStories v-if="viewPost === false" :sts="media_stories"></displayStories>
 
 </template>
 

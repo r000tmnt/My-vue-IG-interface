@@ -1,9 +1,17 @@
 <template v-model="$store.state.basic">
 <div class="top_frame">
+
+  <div id="banner" :style="{'background-image':'url('+$store.state.basic.profile_pic+')',
+                            'background-size': 'cover','background-position':'center',
+                            'filter':'blur(5px)'}">
+  </div>
+
   <div id="fromData">
       <div id="profile" class="flex">
         <div class="profile_pic">
-          <img :src="$store.state.basic.profile_pic" alt="Not Found">
+          <a href="#">
+            <img :src="$store.state.basic.profile_pic" alt="Not Found">
+          </a>
         </div>
 
           <div class="biography">
@@ -21,8 +29,8 @@
        </ul>
 
        <ul class="sections flex">
-         <li><button class="post here" @click="viewPosts()" @mouseover="ishereHover">貼文</button></li>
-         <li><button class="story" @click="viewStroies()" @mouseover="ishereHover">限時動態</button></li>
+         <li><button class="post here" @click="viewPosts()">貼文</button></li>
+         <li><button class="story" @click="viewStroies()">限時動態</button></li>
        </ul>
           
   </div>
@@ -37,26 +45,24 @@ export default {
   },
   methods: {
     viewPosts(){
-      this.$parent.viewPost = true; 
+      this.$parent.viewPost = true;
+      var post = document.querySelector(".post");
+      var story = document.querySelector(".story");
+      var vm = this;
+
+      post.classList.add("here");
+      story.classList.remove("here");
+      this.$parent.hideImages(vm); //Without this function, switching back will reveal all images. 
       console.log(this.$parent.viewPost)
     },
 
     viewStroies(){
       this.$parent.viewPost = false;
-      console.log(this.$parent.viewPost) 
-    },
-
-    ishereHover(){
       var post = document.querySelector(".post");
-      var story = document.querySelector(".story")
-      
-      if(post.classList.contains("here")){
-        post.classList.remove("here")
-        story.classList.add("here")
-      }else if(story.classList.contains("here")){
-        story.classList.remove("here")
-        post.classList.add("here")
-      }
+      var story = document.querySelector(".story");
+      story.classList.add("here");
+      post.classList.remove("here");
+      console.log(this.$parent.viewPost) 
     }
   }
 }
@@ -77,7 +83,7 @@ export default {
   content: ">";
   color: #232;
   display: inline-block;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   font-weight: bold;
   animation: ishere 1s ease-in-out infinite alternate-reverse !important;
 }
@@ -88,7 +94,15 @@ export default {
 
 .top_frame{
   /* border: 1px solid red; */
-  background-color: rgb(240, 240, 240);
+}
+
+#banner{
+  width: 100%;
+  height: 30vh;
+  position: absolute;
+  z-index: -1;
+  transform: scale(1.2);
+  opacity: 0.9;
 }
 
 #fromData{
@@ -110,7 +124,7 @@ export default {
   margin: 0 2vw 0 0;
 }
 
-.profile_pic > img{
+.profile_pic > a > img{
   max-width: 100%;
   vertical-align: middle;
 }
@@ -121,11 +135,12 @@ export default {
 
 h4 > a{
   text-decoration: none;
-  color: steelblue;
+  color: white;
+  background-color: rgba(34, 51, 34, 0.5);
 }
 
 a:hover{
-  color: slateblue;
+  color: skyblue;
 }
 
 .counts{
@@ -139,21 +154,23 @@ ul > li{
 }
 
 .sections{
-  width: 15vw;
+  width: 25vw;
   margin: 0 auto;
   padding: 1vh 0;
   border-top: 1px solid #232;
 }
 
 .sections > li > button{
-  border: none;
+  border: 1px solid rgba(34, 51, 34, 0);
+  border-radius: 10px;
   color: steelblue;
   cursor: pointer;
+  width: 10vw;
+  font-size: 1.2rem;
 }
 
-.sections > li:hover{
-  color: white;
-  background-color: #232;
+.sections > li > button:hover{
+  border-bottom: 1px solid #232;
   transition: 0.5s;
 }
 </style>
