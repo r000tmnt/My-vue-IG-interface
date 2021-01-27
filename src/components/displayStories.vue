@@ -1,14 +1,15 @@
-<template style="position: relative">
+<template style="position: relative" v-model="count">
 <div id="noStory" v-if="Object.keys($parent.media_stories).length === 0">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 
-<div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pause">
+<div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pauseClick">
   
   <div class="showStory" v-for="n in sts" :key="n">
     <div class="back"><button @click="goBack">X</button></div>
-    <div id="timeCount"></div>
-    <center>{{n.time}}</center>
+    <center id="timeCount">
+      {{count}}
+    </center>
     <div class="main"><img :src="n.url" alt="Not Found"></div>
   </div>
   
@@ -26,9 +27,20 @@ export default {
   data(){
     return{
       timer: null,
+      count: 0,
+      pause: false
     }
   },
   methods: {
+    hideStories(){
+      var stories = document.querySelectorAll(".main");
+      if(stories.length > 1){
+        for(let i=0; i <= stories.length; i++){
+          stories[i+1].style.display = 'none';
+        }
+      }
+    },
+
     goBack(){
       this.$parent.viewPost = true;
       var post = document.querySelector(".post");
@@ -38,17 +50,41 @@ export default {
     },
 
     countDown(){
-       setTimeout(() => {
-        this.goBack();
-      }, 5500);
+      this.timer = window.setInterval(() => {
+                    this.count++;
+
+                    if(this.count === 15 && this.sts.length === 1){ //If there's only one story
+                       this.goBack();
+                    }else if(this.count === 15 && this.sts.length > 1){
+                       var stories = document.querySelectorAll(".main");
+                       for(let i=0; i < this.sts.length; i++){ // If there's more
+                          stories[i+1].innerHTML = '<img src='+ this.sts[i+1].url +'>';
+                          stories[i].style.display = 'none'
+                          stories[i+1].style.display = 'block';
+                       }
+                      }
+      
+                    }, 1000);
+      
+      
+       
     },
 
-    pause(){
-      clearTimeout(this.countDown());
+    pauseClick(){
+      if(this.pause === false){ //pause timer if it is counting
+        window.clearInterval(this.timer);
+        this.pause = true;
+        console.log("pause");
+      }else if(this.pause === true){ //resume counting if it is paused
+        this.pause = false;
+        console.log("continue");
+        this.countDown();
+      }
     }
   },
   created(){
       this.countDown();
+      this.hideStories();
   }
 }
 </script>
@@ -108,10 +144,9 @@ center{
 }
 
 #timeCount{
-  border: 1px solid white;
-  background: white;
+  /* border: 1px solid white; */
   height: 1.5vh;
-  animation: countDown 15s;
+  /* animation: countDown 15s; */
 }
 
 .main{
