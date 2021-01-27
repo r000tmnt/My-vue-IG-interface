@@ -50,16 +50,13 @@ export default {
 
       for(let i=0; i < Clength; i++){
         if(n.id === this.$store.state.media_comments[i].media.id){ //Check if both id matches
-          this.gotComment = true
-          var theTime = new Date(this.$store.state.media_comments[i].timestamp).getTime(); //Get time code
-          var whatime = new Date(theTime).toDateString()//Convert to human readable time
-          
+          this.gotComment = true          
 
           theComment.push({mediaID: this.$store.state.media_comments[i].media.id, //Push the info of the comment
                            id: this.$store.state.media_comments[i].id,
                            userName: this.$store.state.media_comments[i].username,
                            text: this.$store.state.media_comments[i].text,
-                           time: whatime});
+                           time: this.$store.state.media_comments[i].timestamp});
         }
       }
       this.theMediaComment = theComment;

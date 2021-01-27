@@ -171,9 +171,21 @@ export default {
             sortComment.push(oneComment[i]);
           }
           console.log(sortComment);
+          
+          for(let i=0; i < sortComment.length; i++){
+            var timeCode = sortComment[i].timestamp;
+            sortComment[i].timestamp = vm.convetTime(timeCode);
+          }
+
           vm.$store.state.media_comments = sortComment;
         }
       )
+    },
+
+    convetTime(timeCode){ //Convert to human readable time
+      var theTime = new Date(timeCode).getTime();
+      var whatTime = new Date(theTime).toDateString();
+      return whatTime;
     },
  
     hideImages(vm){

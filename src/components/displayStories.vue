@@ -4,12 +4,10 @@
 </div>
 
 <div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pauseClick">
+  <div class="back"><button @click="goBack">X</button></div>
   
   <div class="showStory" v-for="n in sts" :key="n">
-    <div class="back"><button @click="goBack">X</button></div>
-    <center id="timeCount">
-      {{count}}
-    </center>
+    <center id="timeCount"></center>
     <div class="main"><img :src="n.url" alt="Not Found"></div>
   </div>
   
@@ -45,16 +43,20 @@ export default {
       this.$parent.viewPost = true;
       var post = document.querySelector(".post");
       var story = document.querySelector(".story");
+      var vm = this;
       post.classList.add("here");
       story.classList.remove("here");
+      this.$parent.hideImages(vm);
     },
 
     countDown(){
       this.timer = window.setInterval(() => {
-                    this.count++;
+                    console.log(this.count++);
 
                     if(this.count === 15 && this.sts.length === 1){ //If there's only one story
                        this.goBack();
+                       this.count = 0;
+                       this.pauseClick();
                     }else if(this.count === 15 && this.sts.length > 1){
                        var stories = document.querySelectorAll(".main");
                        for(let i=0; i < this.sts.length; i++){ // If there's more
@@ -71,13 +73,16 @@ export default {
     },
 
     pauseClick(){
+      var timeCount = document.getElementById("timeCount");
       if(this.pause === false){ //pause timer if it is counting
         window.clearInterval(this.timer);
         this.pause = true;
+        timeCount.style.animationPlayState = 'paused';
         console.log("pause");
       }else if(this.pause === true){ //resume counting if it is paused
         this.pause = false;
         console.log("continue");
+        timeCount.style.animationPlayState = 'running';
         this.countDown();
       }
     }
@@ -120,8 +125,7 @@ export default {
 }
 
 center{
-  padding: 1vw;
-  color: white;
+  padding: 0.2vw;
 }
 
 .showStory{
@@ -144,13 +148,14 @@ center{
 }
 
 #timeCount{
-  /* border: 1px solid white; */
-  height: 1.5vh;
-  /* animation: countDown 15s; */
+  background: white;
+  margin-top: 0.5vh;
+  color: steelblue;
+  animation: countDown 40s 1s;
 }
 
 .main{
-  width: 55%;
+  width: 530px;
   margin: 0 auto;
 }
 
