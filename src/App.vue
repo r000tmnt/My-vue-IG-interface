@@ -2,8 +2,9 @@
 
   <header> My Vue-IG-Interface</header>
   <basicInfo></basicInfo>
-  <display-medias v-if="viewPost" :urls="media_urls"></display-medias>
-  <displayStories v-if="viewPost === false" :sts="media_stories"></displayStories>
+  <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
+  <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
+  <displayMention v-if="currentLocation === 'mention'"></displayMention>
 
 </template>
 
@@ -12,11 +13,12 @@
 import basicInfo from './components/basicInfo.vue'
 import displayMedias from './components/displayMedias.vue'
 import displayStories from './components/displayStories.vue'
+import displayMention from './components/displayMention'
 
 export default {
   name: 'App',
   components: {
-    basicInfo, displayMedias, displayStories
+    basicInfo, displayMedias, displayStories, displayMention
   },
   data(){
     return{
@@ -28,7 +30,9 @@ export default {
           // id: "", url: "", caption: "", time: ""
         },
 
-        viewPost: true
+        media_mentions:{},
+
+        currentLocation: 'post'
     }
   },
   methods: {
@@ -157,14 +161,18 @@ export default {
 
           for(let i=0; i < cArray.length; i++){//filter out the media with multiple comments
               if(cArray[i].data.length > 1){
-                multiComment = cArray[i].data;
+                multiComment.push(cArray[i].data);
+                console.log(multiComment)
               }else{
-                oneComment = cArray[i].data;
+                oneComment.push(cArray[i].data[i-i]);
+                console.log(oneComment)
               }
           }
 
-          for(let i=0; i < multiComment.length; i++){
-            sortComment.push(multiComment[i]);
+          for(let i=0; i < multiComment.length; i++){ //loop into each array
+            for(let j=0; j < multiComment[i].length; j++){
+              sortComment.push(multiComment[i][j]);
+            }
           }
           
           for(let i=0; i < oneComment.length; i++){

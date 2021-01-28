@@ -9,7 +9,7 @@
   <div id="fromData">
       <div id="profile" class="flex">
         <div class="profile_pic">
-          <a href="#">
+          <a class="section story" @click="viewStroies()">
             <img :src="$store.state.basic.profile_pic" alt="Not Found">
           </a>
         </div>
@@ -29,8 +29,8 @@
        </ul>
 
        <ul class="sections flex">
-         <li><button class="post here" @click="viewPosts()">貼文</button></li>
-         <li><button class="story" @click="viewStroies()">限時動態</button></li>
+         <li><button class="section post here" @click="viewPosts()">貼文</button></li>
+         <li><button class="section mention" @click="viewMentions()">標註</button></li>
        </ul>
           
   </div>
@@ -45,24 +45,36 @@ export default {
   },
   methods: {
     viewPosts(){
-      this.$parent.viewPost = true;
-      var post = document.querySelector(".post");
-      var story = document.querySelector(".story");
+      this.$parent.currentLocation = 'post';
+      var _where = document.querySelector(".post")
+      this.checkWhere(_where);
       var vm = this;
-
-      post.classList.add("here");
-      story.classList.remove("here");
       this.$parent.hideImages(vm); //Without this function, switching back will reveal all images. 
-      console.log(this.$parent.viewPost)
+      console.log(this.$parent.currentLocation)
     },
 
     viewStroies(){
-      this.$parent.viewPost = false;
-      var post = document.querySelector(".post");
-      var story = document.querySelector(".story");
-      story.classList.add("here");
-      post.classList.remove("here");
-      console.log(this.$parent.viewPost) 
+      this.$parent.currentLocation = 'story';
+      var _where = document.querySelector(".story")
+      this.checkWhere(_where);
+      console.log(this.$parent.currentLocation) 
+    },
+
+    viewMentions(){
+      this.$parent.currentLocation = 'mention';
+      var _where = document.querySelector(".mention")
+      this.checkWhere(_where);
+      console.log(this.$parent.currentLocation);
+    },
+
+    checkWhere(_where){
+      var here = document.querySelector(".here");
+      here.classList.remove("here")
+      _where.classList.add("here");
+
+      if(_where.classList.contains("story")){
+        _where.classList.add("Here");
+      }
     }
   }
 }
@@ -86,6 +98,10 @@ export default {
   font-size: 1.2rem;
   font-weight: bold;
   animation: ishere 1s ease-in-out infinite alternate-reverse !important;
+}
+
+.Here::before{
+  content: none;
 }
 
 .flex{
@@ -127,6 +143,7 @@ export default {
 .profile_pic > a > img{
   max-width: 100%;
   vertical-align: middle;
+  cursor: pointer;
 }
 
 .biography{

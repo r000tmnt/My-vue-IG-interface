@@ -27,11 +27,11 @@
 
       <div class="comment_list">
 
-      <section v-show="$parent.gotComment === true">
-        <div class="vistor" v-for="n in mediaComment" :key="n.id">
+      <section>
+        <div class="vistor" v-for="(n, index) in mediaComment" :key="n.id">
           <h4 class="comment">{{n.userName}}: {{n.text}}
             <small>{{n.time}}</small>
-            <button class="del" @click="deleteComment(n)">X</button>
+            <button class="del" @click="deleteComment(n, index)">X</button>
           </h4>
         </div>
       </section>
@@ -54,26 +54,33 @@ export default {
     pushComment(){
       var newComment = document.getElementById('pushNew');
       var vm = this;
+      var current = new Date();
+      var theDay = current.toDateString();
       window.FB.api(
         vm.media.id+'/comments',
         'POST',
         {"message": newComment.value},
         function(response){
+          vm.$parent.theMediaComment.unshift({id: response.id,
+                                              userName: vm.$store.state.basic.userName,
+                                              text: newComment.value,
+                                              time: theDay})
           console.log(response);
           newComment.value = ''; //Clear input
         }
       )
     },
 
-    deleteComment(n){
+    deleteComment(n, index){
       let ask = confirm('您希望刪除 '+n.text+' 這個留言嗎?')
-
+      var vm = this;
       if(ask){
           window.FB.api(
           n.id,
           'DELETE',
           function(responseDEL){
             console.log(responseDEL);
+            vm.$parent.theMediaComment.splice(index, 1);
           }
         )
       }else{

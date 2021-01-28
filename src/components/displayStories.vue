@@ -50,7 +50,8 @@ export default {
     },
 
     countDown(){
-      this.timer = window.setInterval(() => {
+      if(Object.keys(this.$parent.media_stories).length > 0){//Start counting when there are stories to show
+        this.timer = window.setInterval(() => {
                     console.log(this.count++);
 
                     if(this.count === 15 && this.sts.length === 1){ //If there's only one story
@@ -67,9 +68,8 @@ export default {
                       }
       
                     }, 1000);
+      }
       
-      
-       
     },
 
     pauseClick(){
@@ -98,7 +98,7 @@ export default {
 <style scoped>
 @keyframes countDown{
   from{ transform: translateX(0px); }
-  to{ transform: translateX(100vw); }
+  to{ transform: translateX(60vw); }
 }
 
 #noStory{
@@ -151,7 +151,7 @@ center{
   background: white;
   margin-top: 0.5vh;
   color: steelblue;
-  animation: countDown 40s 1s;
+  animation: countDown 16s;
 }
 
 .main{

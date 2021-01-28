@@ -30,7 +30,6 @@ export default {
   data(){
       return{
           isViewing: false,
-          gotComment: false,
           clickedMedia: {},
         theMediaComment: [] 
       }
@@ -49,8 +48,7 @@ export default {
       var Clength = this.$store.state.media_comments.length;
 
       for(let i=0; i < Clength; i++){
-        if(n.id === this.$store.state.media_comments[i].media.id){ //Check if both id matches
-          this.gotComment = true          
+        if(n.id === this.$store.state.media_comments[i].media.id){ //Check if both id matches      
 
           theComment.push({mediaID: this.$store.state.media_comments[i].media.id, //Push the info of the comment
                            id: this.$store.state.media_comments[i].id,
