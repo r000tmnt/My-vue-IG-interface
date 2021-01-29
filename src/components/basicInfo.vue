@@ -98,6 +98,7 @@ export default {
   font-size: 1.2rem;
   font-weight: bold;
   animation: ishere 1s ease-in-out infinite alternate-reverse !important;
+  z-index: -1;
 }
 
 .Here::before{
@@ -117,7 +118,6 @@ export default {
   height: 30vh;
   position: absolute;
   z-index: -1;
-  transform: scale(1.2);
   opacity: 0.9;
 }
 
@@ -148,6 +148,10 @@ export default {
 
 .biography{
   width: 20%;
+}
+
+.biography > h4{
+  width: 20vw;
 }
 
 h4 > a{
@@ -189,5 +193,98 @@ ul > li{
 .sections > li > button:hover{
   border-bottom: 1px solid #232;
   transition: 0.5s;
+}
+
+@media screen and (max-width: 1279px){
+  .biography > h4{
+   width: 30vw;
+ }
+  
+  .counts{
+    width: 25vw;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 940px){
+   #fromData{
+   width: 90vw;
+   transition: 0.5s ease-in-out;
+ } 
+
+  .biography > h4{
+   width: 40vw;
+ }
+
+  .counts{
+    width: 30vw;
+  }
+}
+
+@media screen and (max-width: 745px) {
+  .profile_pic {
+    margin-left: -20vw;
+    transition: 0.5s;
+  }
+  
+  .counts{
+    width: 40vw;
+  }
+
+  .sections > li > button{
+    width: unset;
+  }
+}
+
+@media screen and (max-width: 570px) {
+ #fromData{
+   width: 100vw;
+   transition: 0.5s ease-in-out;
+ } 
+
+ .biography > h1{
+   font-size: 1.5rem;
+ }
+
+ .biography > h4{
+   width: 50vw;
+ }
+
+ .biography > h4 > a{
+   font-size: 0.78rem;
+ }
+
+ .counts , .sections{
+   width: 90%;
+   justify-content: center;
+ }
+ 
+ .sections > li > button{
+   width: 20vw;
+ }
+}
+
+@media screen and (max-width: 467px) {
+ .profile_pic {
+    margin-left: -40vw!important;
+    transition: 0.5s;
+  }
+
+ .biography > h4{
+   width: 50vw;
+ }
+
+ .biography > h4 > a{
+   font-size: 0.78rem;
+ }
+
+ .counts , .sections{
+   width: 90%;
+   justify-content: center;
+ }
+ 
+ .sections > li > button{
+   width: 20vw;
+ }
 }
 </style>

@@ -30,5 +30,6 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+  margin-top: 20vh;
 }
 </style>

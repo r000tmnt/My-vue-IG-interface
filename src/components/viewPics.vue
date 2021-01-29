@@ -1,12 +1,12 @@
 <template style="position: relative" v-model="mediaComment">
-<div class="modal flex">
-   <div id="view">
-    <img :src="media.url" alt="not found">
-  </div>
+<div class="modal">
+  <button class="close" @click="closeModal">X</button>
+  <div class="forFlex flex">
+    <div id="view">
+      <img :src="media.url" alt="not found">
+    </div>
 
-  <div id="info">
-    <button class="close" @click="closeModal">X</button>
-
+    <div id="info">
     <div class="profile flex">
        <img :src="$store.state.basic.profile_pic" alt="">
       <span>{{$store.state.basic.userName}}</span>
@@ -39,6 +39,10 @@
       </div>
     </div>
   </div>
+  </div>
+   
+
+  
 </div>
  
 </template>
@@ -90,7 +94,6 @@ export default {
 
     closeModal(){
       this.$parent.isViewing = false;
-      this.$parent.gotComment = false; //make sure to close it
 
       this.$parent.theMediaComment.splice(0, this.$parent.theMediaComment.length); //clear props
 
@@ -112,7 +115,6 @@ export default {
   }
 
   .modal{
-    justify-content: center;
     background-color: rgba(34, 51, 34, 0.9);
     top: 50%;
     left: 50%;
@@ -121,6 +123,10 @@ export default {
     transform: translate(-50%, -50%);
     position: absolute;
     color:white;
+  }
+
+  .forFlex{
+    justify-content: center;
   }
 
   #view{
@@ -134,7 +140,7 @@ export default {
 
   .profile{
     flex-wrap: wrap;
-    padding: 20% 0 1% 0;
+    padding: 20% 0 1.5% 0;
     border-bottom: 1px solid white;
   }
 
@@ -155,11 +161,10 @@ export default {
     border:0;
     background: none;
     border: none;
-    width: 10%;
     float: right;
     font-size: 1.2rem;
     cursor: pointer;
-    margin-top: 1vh;
+    margin: 1vh 1vw 0 0;
     color: white ;
   }
 
@@ -170,7 +175,7 @@ export default {
   }
 
   .subInfo{
-    padding: 1vh 0 0 0;
+    padding: 1.5vh 0 0 0;
   }
 
   section{
@@ -203,5 +208,34 @@ export default {
   h4 > button:hover{
     color: white;
     transition: 0.5s;
+  }
+
+  @media screen and (max-width: 1442px) {
+    .modal{
+      overflow: scroll;
+    }
+    
+    .forFlex{
+      flex-direction: column;
+    }
+
+    #view{
+      width: 100vw;
+    }
+
+    .profile{
+      padding: unset;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding-bottom: 1.5vh;
+    }
+
+    .caption, .comments{
+      text-align: center;
+    }
+
+    .comment{
+      display: inline-block;
+    }
   }
 </style>

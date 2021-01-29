@@ -63,7 +63,7 @@ export default {
     getBasic(vm, IGid, acToken){
       window.FB.api(
         IGid,
-        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website,stories", "access_token": acToken},
+        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website,stories,tags", "access_token": acToken},
           function(basicData){
           console.log(basicData);
         

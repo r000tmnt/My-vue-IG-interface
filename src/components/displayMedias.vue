@@ -158,4 +158,56 @@ export default {
   color: white;
   transition: 0.5s;
 }
+
+@media screen and (max-width: 1300px) {
+ #photos{
+   width: 75vw;
+   transition: 0.5s ease-in-out;
+ }
+
+ .medias{
+   width: 23.8vw;
+   transition: 0.5s ease-in-out;
+ } 
+}
+
+@media screen and (max-width: 995px) {
+ #photos{
+   width: 100%;
+   transition: 0.5s ease-in-out;
+ }
+
+ .medias{
+   width: 31.3vw;
+   transition: 0.5s ease-in-out;
+ } 
+}
+
+@media screen and (max-width: 750px) {
+ .medias{
+   width: 31vw;
+   height:25vh;
+   transition: 0.5s ease-in-out;
+ } 
+}
+
+@media screen and (max-width: 570px) {
+ .medias{
+   width: 30.5vw;
+   height:24vh;
+   transition: 0.5s ease-in-out;
+ }
+
+ .showMore{
+   width: unset;
+ } 
+}
+
+@media screen and (max-width: 467px) {
+ .medias{
+   width: 30.5vw;
+   height:20vh;
+   transition: 0.5s ease-in-out;
+ } 
+}
 </style>

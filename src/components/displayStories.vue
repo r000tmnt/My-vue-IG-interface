@@ -3,8 +3,7 @@
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 
-<div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pauseClick">
-  <div class="back"><button @click="goBack">X</button></div>
+<div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pauseClick" @dblclick="goBack">
   
   <div class="showStory" v-for="n in sts" :key="n">
     <center id="timeCount"></center>
@@ -40,7 +39,7 @@ export default {
     },
 
     goBack(){
-      this.$parent.viewPost = true;
+      this.$parent.currentLocation = 'post';
       var post = document.querySelector(".post");
       var story = document.querySelector(".story");
       var vm = this;
@@ -98,7 +97,7 @@ export default {
 <style scoped>
 @keyframes countDown{
   from{ transform: translateX(0px); }
-  to{ transform: translateX(60vw); }
+  to{ transform: translateX(100%); }
 }
 
 #noStory{
@@ -111,6 +110,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+  margin-top: 20vh;
 }
 
 #hasStories{
@@ -118,7 +118,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
-  background-color: #232;
+  background-color: rgba(34, 51, 34, 0.9);
   width: 100%;
   height: 100vh;
   cursor: pointer;
@@ -138,6 +138,8 @@ center{
 .back{
   float: right;
   margin-top: 1vh;
+  position: absolute;
+  z-index: 2;
 }
 
 .back > button{
@@ -161,5 +163,21 @@ center{
 
 .main > img{
   max-width: 100%;
+}
+
+@media screen and (max-width: 900px) {
+  .showStory{
+    width: 90vw;
+  }
+}
+
+@media screen and (max-width: 592px) {
+  .showStory{
+    width: 95vw;
+  }
+
+  .main{
+    width: 520px;
+  }
 }
 </style>
