@@ -154,7 +154,8 @@ export default {
   }
 
   .profile > img{
-    width: 5vw;
+    width: 82px;
+    height: 82px;
     border-radius: 50%;
   }
 
@@ -167,6 +168,8 @@ export default {
     cursor: pointer;
     margin: 1vh 1vw 0 0;
     color: white ;
+    position: relative;
+    z-index: 2;
   }
 
   .close:hover{
@@ -221,7 +224,13 @@ export default {
     }
 
     #view{
-      width: 100vw;
+      width: 90vw;
+      padding: 5vh 0 5vh 3vh;
+    }
+
+    #view > img{
+      display: block;
+      margin: auto;
     }
 
     .profile{
@@ -231,12 +240,28 @@ export default {
       padding-bottom: 1.5vh;
     }
 
+    .profile > span{
+      vertical-align: middle;
+    }
+
     .caption, .comments{
       text-align: center;
     }
 
     .comment{
       display: inline-block;
+    }
+
+    .comment_list{
+      margin-top: 3vh;
+    }
+  }
+
+  @media screen and (max-width: 770px) {
+    #view{
+      width: 100%;
+      padding: 5vh 0 5vh 0;
+      transition: 0s;
     }
   }
 </style>
