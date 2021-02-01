@@ -1,6 +1,7 @@
 <template style="position: relative" v-model="mediaComment">
 <div class="modal">
   <button class="close" @click="closeModal">X</button>
+  <div style="clear: both"></div>
   <div class="forFlex flex">
     <div id="view">
       <img :src="media.url" alt="not found">
