@@ -4,7 +4,7 @@
   <basicInfo></basicInfo>
   <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
   <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
-  <displayMention v-if="currentLocation === 'mention'"></displayMention>
+  <displayMention v-if="currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
 </template>
 
@@ -63,7 +63,7 @@ export default {
     getBasic(vm, IGid, acToken){
       window.FB.api(
         IGid,
-        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website,stories,tags", "access_token": acToken},
+        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website,stories", "access_token": acToken},
           function(basicData){
           console.log(basicData);
         
@@ -93,6 +93,7 @@ export default {
             }
           }
           vm.getMedias(vm, IGid, acToken);
+          vm.getTags(vm, IGid, acToken);
       });
     },
 
@@ -114,6 +115,25 @@ export default {
       }
       console.log(stories);
       vm.media_stories = stories;
+    },
+
+    getTags(vm, IGid, acToken){
+      var mentioned = new Array();
+      window.FB.api(
+        IGid+'/tags',
+        'GET',
+        {"fields":"id,username,media_url", "access_token": acToken},
+        function(tagged){
+          console.log(tagged.data);
+          for(let i=0; i < tagged.data.length; i++){
+            mentioned.push({id: tagged.data[i].id,
+                            username: tagged.data[i].username,
+                            url: tagged.data[i].media_url});
+          }
+        }
+      )
+      vm.media_mentions = mentioned;
+      console.log(mentioned)
     },
 
     getMedias(vm, IGid, acToken){
