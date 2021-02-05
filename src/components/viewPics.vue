@@ -30,10 +30,11 @@
 
       <section>
         <div class="vistor" v-for="(n, index) in mediaComment" :key="n.id">
-          <h4 class="comment">{{n.userName}}: {{n.text}}
-            <small>{{n.time}}</small>
+          <div class="comment">
             <button class="del" @click="deleteComment(n, index)">X</button>
-          </h4>
+            <h4>{{n.userName}}: {{n.text}}</h4>
+            <small>{{n.time}}</small>
+          </div>
         </div>
       </section>
         
@@ -186,15 +187,27 @@ export default {
     background-color: #232;
   }
 
-  .vistor > h4{
-    border: 1px solid #232;
+  .comment{
+    padding: 0 1%;
   }
 
-  .vistor > h4 > small{
+  .comment:hover{
+    background:white;
+    color: #232;
+    transition: 0.5s;
+  }
+
+  .comment > h4{
+    border: 1px solid rgba(34, 51, 34, 0);
+    margin-bottom: -1px;
+  }
+
+  .comment > small{
     opacity: 0.5;
+    display: inline-block;
   }
   
-  .vistor > h4 > button{
+  .del{
     float: right;
     margin-left: 1vw;
     background: none;
@@ -202,14 +215,10 @@ export default {
     border: none;
     color: #FF2400;
     cursor: pointer;
+    padding: 1%;
   }
 
-  h4.comment:hover{
-    border: 1px solid white;
-    transition: 0.5s;
-  }
-
-  h4 > button:hover{
+  .del:hover{
     color: white;
     transition: 0.5s;
   }
@@ -260,8 +269,16 @@ export default {
   @media screen and (max-width: 770px) {
     #view{
       width: 100%;
-      padding: 5vh 0 5vh 0;
+      padding: 0 0 5vh 0;
       transition: 0s;
+    }
+
+    .comment{
+      display: block;
+    }
+
+    .close{
+      margin-top: 6vh;
     }
   }
 </style>

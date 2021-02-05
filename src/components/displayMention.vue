@@ -88,6 +88,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+  width: 750px;
 }
 
 .large > .enlarge{
@@ -111,5 +112,11 @@ export default {
   border: white;
   background: #232;
   transition: 0.5s;
+}
+
+@media screen and (max-width: 700px) {
+  .large{
+    width: 90vw;
+  }
 }
 </style>
