@@ -125,6 +125,7 @@ export default {
     transform: translate(-50%, -50%);
     position: absolute;
     color:white;
+    padding-bottom: 4%;
   }
 
   .forFlex{
@@ -152,6 +153,7 @@ export default {
     line-height: 6vh;
     font-size: 1.5rem;
     margin: 0 1vw ;
+    margin-top: 1vh;
   }
 
   .profile > img{
@@ -180,7 +182,7 @@ export default {
   }
 
   .subInfo{
-    padding: 1.5vh 0 0 0;
+    padding: 2.9vh 0 0 0;
   }
 
   section{
@@ -247,10 +249,6 @@ export default {
       justify-content: center;
       flex-wrap: wrap;
       padding-bottom: 1.5vh;
-    }
-
-    .profile > span{
-      vertical-align: middle;
     }
 
     .caption, .comments{

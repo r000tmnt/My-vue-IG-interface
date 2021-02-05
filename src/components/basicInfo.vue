@@ -206,7 +206,7 @@ ul > li{
   }
 }
 
-@media screen and (max-width: 940px){
+@media screen and (max-width: 1045px){
    #fromData{
    width: 90vw;
    transition: 0.5s ease-in-out;
@@ -221,7 +221,7 @@ ul > li{
   }
 }
 
-@media screen and (max-width: 745px) {
+@media screen and (max-width: 830px) {
   .profile_pic {
     margin-left: -20vw;
     transition: 0.5s;
@@ -236,7 +236,7 @@ ul > li{
   }
 }
 
-@media screen and (max-width: 570px) {
+@media screen and (max-width: 576px) {
  #fromData{
    width: 100vw;
    transition: 0.5s ease-in-out;

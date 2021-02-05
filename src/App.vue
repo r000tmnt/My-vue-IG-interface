@@ -253,14 +253,11 @@ export default {
       
        window.FB.getLoginStatus(function(response){
          console.log(response);
-         if(response.authResponse !== null){
-           if(!response.authResponse.accessToken){
-             acToken = null;
-           }else{
-             acToken = response.authResponse.accessToken;
-           }
+        
+         if(response.status === 'connected'){
+            acToken = response.authResponse.accessToken;
          }
-
+         
          vm.getFBdata(vm, acToken);
        });
     };
