@@ -37,13 +37,16 @@ export default {
   },
   methods: {
     getFBdata(vm, acToken){
+      var FBid;
        window.FB.api( //need this to get the id
         '/me/accounts',
         {"access_token": acToken},
         function(FBdata) {
             console.log(FBdata)
+            if(FBdata.data !== null){
+              FBid = FBdata.data[0].id;
+            }
 
-            var FBid = FBdata.data[0].id;
             vm.getIGdata(vm, FBid, acToken);
             });
     },
@@ -238,6 +241,7 @@ export default {
   },
   created(){
     var vm = this;
+    var acToken
     vm.scroll();
     window.fbAsyncInit = function() {
       window.FB.init({
@@ -249,7 +253,13 @@ export default {
       
        window.FB.getLoginStatus(function(response){
          console.log(response);
-         var acToken = response.authResponse.accessToken;
+         if(response.authResponse !== null){
+           if(!response.authResponse.accessToken){
+             acToken = null;
+           }else{
+             acToken = response.authResponse.accessToken;
+           }
+         }
 
          vm.getFBdata(vm, acToken);
        });

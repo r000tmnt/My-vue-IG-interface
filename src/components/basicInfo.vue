@@ -195,7 +195,7 @@ ul > li{
   transition: 0.5s;
 }
 
-@media screen and (max-width: 1279px){
+@media screen and (max-width: 1411px){
   .biography > h4{
    width: 30vw;
  }
@@ -266,7 +266,7 @@ ul > li{
 
 @media screen and (max-width: 467px) {
  .profile_pic {
-    margin-left: -40vw!important;
+    margin-left: -33vw!important;
     transition: 0.5s;
   }
 
