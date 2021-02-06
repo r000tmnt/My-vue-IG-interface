@@ -130,9 +130,10 @@ center{
 
 .showStory{
   width: 60vw;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   margin: 0 auto;
   overflow: hidden;
+  margin-top: 4vh;
 }
 
 .back{
@@ -173,11 +174,21 @@ center{
 
 @media screen and (max-width: 592px) {
   .showStory{
-    width: 95vw;
+    width: 100vw;
   }
 
   .main{
     width: 520px;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .showStory{
+    width: 95vw;
+  }
+
+  .main{
+    width: 100%;
   }
 }
 </style>
