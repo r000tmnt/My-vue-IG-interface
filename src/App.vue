@@ -1,6 +1,13 @@
 <template>
 
-  <header> My Vue-IG-Interface</header>
+  <header> 
+    My Vue-IG-Interface
+
+    <div id="fb-login">
+      <button @click="getLogin">登入FB</button>
+    </div>
+    <div style="clear: both"></div>
+  </header>
   <basicInfo></basicInfo>
   <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
   <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
@@ -36,6 +43,12 @@ export default {
     }
   },
   methods: {
+    getLogin(){
+      window.FB.login(function(logInstatus){
+        console.log(logInstatus);
+      },{scope: 'public_profile, email'})
+    },
+
     getFBdata(vm, acToken){
       var FBid;
        window.FB.api( //need this to get the id
@@ -286,5 +299,19 @@ body.modal-open{
 
 header{
   text-align: center;
+}
+
+#fb-login{
+  display: inline-block;
+  float: right;
+  margin: 0.3%;
+}
+
+#fb-login > button{
+  background-color: #4267B2;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
 }
 </style>
