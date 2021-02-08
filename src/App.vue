@@ -2,12 +2,11 @@
 
   <header> 
     My Vue-IG-Interface
-
-    <div id="fb-login">
+  </header>
+  <div id="fb-login">
       <button @click="getLogin">登入FB</button>
     </div>
     <div style="clear: both"></div>
-  </header>
   <basicInfo></basicInfo>
   <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
   <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
@@ -294,9 +293,9 @@ header{
 }
 
 #fb-login{
-  display: inline-block;
+  display: block;
   float: right;
-  margin: 0.3%;
+  margin: -16px 0.3% 0.3% 0.3%;
 }
 
 #fb-login > button{
