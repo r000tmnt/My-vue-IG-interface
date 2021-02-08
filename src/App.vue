@@ -46,7 +46,7 @@ export default {
     getLogin(){
       window.FB.login(function(logInstatus){
         console.log(logInstatus);
-      },{scope: 'public_profile, email'})
+      },{scope: 'public_profile, email, business_management, instagram_basic, instagram_content_publish, instagram_manage_comments'})
     },
 
     getFBdata(vm, acToken){
@@ -83,17 +83,9 @@ export default {
           function(basicData){
           console.log(basicData);
         
-          vm.$store.state.basic.bio = basicData.biography;
-          vm.$store.state.basic.follower = basicData.followers_count; 
-          vm.$store.state.basic.followed = basicData.follows_count;
-          vm.$store.state.basic.medias = basicData.media_count;
-          vm.$store.state.basic.name = basicData.name;
-          vm.$store.state.basic.profile_pic = basicData.profile_picture_url;
-          vm.$store.state.basic.userName = basicData.username;
-          vm.$store.state.basic.web = basicData.website;
+          vm.$store.commit('toBasic', basicData);
 
           //get stories id
-          
           if(!basicData.stories){ //The api can only retrun stories within 24 hours
             var emptyMessage = "No stories in 24 hours.";
             console.log(emptyMessage)
@@ -221,7 +213,7 @@ export default {
             sortComment[i].timestamp = vm.convetTime(timeCode);
           }
 
-          vm.$store.state.media_comments = sortComment;
+          vm.$store.commit('toComment', sortComment);
         }
       )
     },

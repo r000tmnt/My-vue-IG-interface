@@ -169,7 +169,7 @@ export default {
     float: right;
     font-size: 1.2rem;
     cursor: pointer;
-    margin: 1vh 1vw 0 0;
+    margin: 3.5vh 1vw 0 0;
     color: white ;
     position: relative;
     z-index: 2;

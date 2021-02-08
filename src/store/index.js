@@ -17,6 +17,20 @@ export default createStore({
       }
   },
   mutations: {
+    toBasic(state, basicData){
+        state.basic.bio = basicData.biography;
+        state.basic.follower = basicData.followers_count; 
+        state.basic.followed = basicData.follows_count;
+        state.basic.medias = basicData.media_count;
+        state.basic.name = basicData.name;
+        state.basic.profile_pic = basicData.profile_picture_url;
+        state.basic.userName = basicData.username;
+        state.basic.web = basicData.website;
+    },
+
+    toComment(state, sortComment){
+      state.media_comments = sortComment;
+    }
   },
   actions: {
   },
