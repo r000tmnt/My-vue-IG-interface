@@ -74,6 +74,8 @@ export default {
 
       if(pic.offsetWidth < view.offsetWidth){
         info.style['margin-left'] = '-30vw';
+      }else if(view.offsetHeight < sHeigth){
+        info.style['margin-left'] = '0!important';
       }
     },
 
@@ -162,8 +164,7 @@ export default {
   }
 
   #view{
-    width: 100vw;
-    padding: 3vh 5vh 0 5vh;
+    margin: 3vh 5vw 0 5vw;
   }
 
   #view > img{
@@ -285,8 +286,8 @@ export default {
     }
 
     #view{
-      width: 90vw;
-      padding: 5vh 0 5vh 3vh;
+      padding: 0 0 5vh 0;
+      width: 90vw!important;
     }
 
     #view > img{
@@ -323,6 +324,7 @@ export default {
       width: 100%;
       padding: 0 0 5vh 0;
       transition: 0s;
+      margin: 0!important;
     }
 
     .comment{
