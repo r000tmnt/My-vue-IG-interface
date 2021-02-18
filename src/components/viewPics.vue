@@ -4,14 +4,14 @@
   <div style="clear: both"></div>
   <div class="forFlex flex">
     <div id="view">
-      <img :src="media.url" alt="not found">
+      <img id="pic" :src="media.url" alt="not found">
     </div>
 
     <div id="info">
     <div class="profile flex">
        <img :src="$store.state.basic.profile_pic" alt="">
       <span>{{$store.state.basic.userName}}</span>
-
+      
       <div class="subInfo flex">
         <div class="likes">{{media.likes}}個讚</div>
         &nbsp;&nbsp;
@@ -24,7 +24,12 @@
     </div>
 
     <div class="comments">
-      留言<input type="text" id="pushNew" @keydown.enter="pushComment">
+      <div class="input">
+        留言<input type="text" id="pushNew" @keydown.enter="pushComment">
+        <button class="push">
+          <img src="../assets/sent.png" alt="Not found" @click="pushComment">
+        </button>
+      </div>
 
       <div class="comment_list">
 
@@ -57,24 +62,42 @@ export default {
     mediaComment: {}
   },
   methods: {
+    checkIMG(){//Check if the image is protrait or landscape
+      var view = document.getElementById("view");
+      var pic = document.getElementById("pic");
+      var info = document.getElementById("info");
+      var sHeigth = screen.height;
+
+      if(view.offsetHeight > sHeigth){
+        view.style.width = '80vh';
+      }
+
+      if(pic.offsetWidth < view.offsetWidth){
+        info.style['margin-left'] = '-30vw';
+      }
+    },
+
     pushComment(){
       var newComment = document.getElementById('pushNew');
       var vm = this;
       var current = new Date();
       var theDay = current.toDateString();
-      window.FB.api(
-        vm.media.id+'/comments',
-        'POST',
-        {"message": newComment.value},
-        function(response){
-          vm.$parent.theMediaComment.unshift({id: response.id,
-                                              userName: vm.$store.state.basic.userName,
-                                              text: newComment.value,
-                                              time: theDay})
-          console.log(response);
-          newComment.value = ''; //Clear input
-        }
-      )
+
+      if(newComment.value !== ''){
+        window.FB.api(
+          vm.media.id+'/comments',
+          'POST',
+          {"message": newComment.value},
+          function(response){
+            vm.$parent.theMediaComment.unshift({id: response.id,
+                                                userName: vm.$store.state.basic.userName,
+                                                text: newComment.value,
+                                                time: theDay})
+            console.log(response);
+            newComment.value = ''; //Clear input
+          }
+        )
+      }
     },
 
     deleteComment(n, index){
@@ -106,6 +129,12 @@ export default {
       body.style.position = '';
       // window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
+  },
+
+  created(){
+    this.$nextTick(()=>{
+      this.checkIMG();
+    })
   }
 }
 </script>
@@ -133,8 +162,8 @@ export default {
   }
 
   #view{
-    width: 50vw;
-    padding: 5vh;
+    width: 100vw;
+    padding: 3vh 5vh 0 5vh;
   }
 
   #view > img{
@@ -153,12 +182,11 @@ export default {
     line-height: 6vh;
     font-size: 1.5rem;
     margin: 0 1vw ;
-    margin-top: 1vh;
   }
 
   .profile > img{
-    width: 82px;
-    height: 82px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
   }
 
@@ -181,8 +209,12 @@ export default {
     transition: 0.5s;
   }
 
+  .close:focus{
+    outline: none;
+  }
+
   .subInfo{
-    padding: 2.9vh 0 0 0;
+    padding: 2vh 0 0 0;
   }
 
   section{
@@ -209,6 +241,24 @@ export default {
     display: inline-block;
   }
   
+  .push{
+    background: none;
+    border: none;
+    width: 1.4%;
+    padding: 0;
+    margin: 0 0.3%;
+    position: absolute;
+    cursor: pointer;
+  }
+
+  .push:focus{
+    outline: none;
+  }
+
+  .push > img{
+    max-width: 100%;
+  }
+
   .del{
     float: right;
     margin-left: 1vw;
@@ -255,6 +305,10 @@ export default {
       text-align: center;
     }
 
+    #info{
+      margin: 0!important;
+    }
+
     .comment{
       display: inline-block;
     }
@@ -277,6 +331,21 @@ export default {
 
     .close{
       margin-top: 6vh;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    .profile{
+      padding: 0 2vw 1.5vh 2vw;
+    }
+
+    .caption{
+      padding: 3vw;
+    }
+
+    .push{
+      width: 7%;
+      margin: 0 1.5%;
     }
   }
 </style>

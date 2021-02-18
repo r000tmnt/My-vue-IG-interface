@@ -81,15 +81,15 @@ export default {
           
           if(isHidden.length > 9){ //if there's more, only reveal next 9 images
             for(let j=0; j < 9; j++){
-              isHidden[i].style.display = 'block';
-              isHidden[i].classList.add("fadeIN");
+              isHidden[j].style.display = 'block';
+              isHidden[j].classList.add("fadeIN");
             }
           window.scrollTo({ //move to the bottom of screen
             top: document.body.scrollHeight,
             behavior: "smooth"});
           }
           
-          if(isHidden.length < 9){ //if there's less than 9, show the rest.
+          if(isHidden.length <= 9){ //if there's 9 or less, show the rest.
             medias[i].style.display = 'block';
             medias[i].classList.add("fadeIN")
             window.scrollTo({ //move to the bottom of screen
