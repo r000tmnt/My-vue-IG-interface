@@ -25,7 +25,7 @@
 
     <div class="comments">
       <div class="input">
-        留言<input type="text" id="pushNew" @keydown.enter="pushComment">
+        <input type="text" id="pushNew" @keydown.enter="pushComment">
         <button class="push">
           <img src="../assets/sent.png" alt="Not found" @click="pushComment">
         </button>
@@ -241,11 +241,16 @@ export default {
     opacity: 0.5;
     display: inline-block;
   }
+
+  .input::before{
+    content: "留言";
+    color: white;
+  }
   
   .push{
     background: none;
     border: none;
-    width: 1.4%;
+    width: 24px;
     padding: 0;
     margin: 0 0.3%;
     position: absolute;
@@ -321,12 +326,11 @@ export default {
 
   @media screen and (max-width: 770px) {
     #view{
-      width: 100%;
+      width: 100%!important;
       padding: 0 0 5vh 0;
       transition: 0s;
       margin: 0!important;
     }
-
     .comment{
       display: block;
     }
@@ -341,12 +345,19 @@ export default {
       padding: 0 2vw 1.5vh 2vw;
     }
 
-    .caption{
-      padding: 3vw;
+    .caption > h4{
+      padding: 1px;
+    }
+
+    .input::before{
+      content: "";
+    }
+
+    #pushNew{
+      width: 75vw;
     }
 
     .push{
-      width: 7%;
       margin: 0 1.5%;
     }
   }
