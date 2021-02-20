@@ -295,7 +295,7 @@ header{
 #fb-login{
   display: block;
   float: right;
-  margin: -16px 0.3% 0.3% 0.3%;
+  margin: -19px 0.3% 0.3% 0.3%;
 }
 
 #fb-login > button{

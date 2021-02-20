@@ -126,20 +126,22 @@ export default {
   flex: 3;
   border-left: 1px solid lightgray;
   border-right: 1px solid lightgray;
-  width: 55vw;
+  width: 920px;
   margin: 0 auto;
+  transition: .5s ease-in-out;
 }
 
 .medias{
   border: 1px solid #232;
-  width: 17.1vw;
-  height: 30vh;
-  margin: 0.5vw 0.5vw;
+  width: 295px;
+  height: 295px;
+  margin: 0.5%;
   cursor: pointer;
+  transition: .5s ease-in-out;
 }
 
 .more{
-  padding: 0 0 0.5% 0.5%;
+  padding: 0.5vh 0 0.5% 0.5%;
   display: flex;
   justify-content: center;
 }
@@ -159,43 +161,58 @@ export default {
   transition: 0.5s;
 }
 
-@media screen and (max-width: 1300px) {
- #photos{
-   width: 75vw;
-   transition: 0.5s ease-in-out;
- }
-
- .medias{
-   width: 23.8vw;
-   transition: 0.5s ease-in-out;
+@media screen and (max-width: 1415px) {
+ .counts{
+   width: 25vw;
  } 
 }
 
 @media screen and (max-width: 995px) {
  #photos{
-   width: 100%;
-   transition: 0.5s ease-in-out;
+   width: 99%;
  }
 
  .medias{
    width: 31.3vw;
-   transition: 0.5s ease-in-out;
  } 
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 915px) {
+ .medias{
+   width: 31.1vw;
+ } 
+}
+
+@media screen and (max-width: 814px) {
  .medias{
    width: 31vw;
+ } 
+}
+
+@media screen and (max-width: 734px) {
+ .medias{
+   width: 30.9vw;
    height:25vh;
-   transition: 0.5s ease-in-out;
+ } 
+}
+
+@media screen and (max-width: 668px) {
+ .medias{
+   width: 30.8vw;
+ } 
+}
+
+@media screen and (max-width: 612px) {
+ .medias{
+   width: 30.7vw;
  } 
 }
 
 @media screen and (max-width: 570px) {
  .medias{
-   width: 30.5vw;
-   height:24vh;
-   transition: 0.5s ease-in-out;
+   width: 32.4vw;
+   height:20vh;
+   margin: 0!important;
  }
 
  .showMore{
@@ -205,9 +222,7 @@ export default {
 
 @media screen and (max-width: 467px) {
  .medias{
-   width: 30.5vw;
-   height:20vh;
-   transition: 0.5s ease-in-out;
+   height:17vh;
  } 
 }
 </style>

@@ -25,13 +25,17 @@
 
     <div class="comments">
       <div class="input">
-        <input type="text" id="pushNew" @keydown.enter="pushComment">
+        <input type="text" id="pushNew" @keydown.enter="pushComment" placeholder="留言">
         <button class="push">
           <img src="../assets/sent.png" alt="Not found" @click="pushComment">
         </button>
       </div>
 
-      <div class="comment_list">
+      <div id="noComment" v-if="$parent.theMediaComment.length === 0">
+        <h4>尚無留言，搶個頭香吧。</h4>
+      </div>
+
+      <div class="comment_list" v-else>
 
       <section>
         <div class="vistor" v-for="(n, index) in mediaComment" :key="n.id">
@@ -156,7 +160,7 @@ export default {
     transform: translate(-50%, -50%);
     position: absolute;
     color:white;
-    padding-bottom: 4%;
+    padding-bottom: 14%;
   }
 
   .forFlex{
@@ -198,7 +202,7 @@ export default {
     float: right;
     font-size: 1.2rem;
     cursor: pointer;
-    margin: 3.5vh 1vw 0 0;
+    margin: 1.5vh 1vw 0 0;
     color: white ;
     position: relative;
     z-index: 2;
@@ -242,9 +246,9 @@ export default {
     display: inline-block;
   }
 
-  .input::before{
-    content: "留言";
-    color: white;
+  #pushNew{
+    width: 300px;
+    transition: 0.5s ease-in-out;
   }
   
   .push{
@@ -336,7 +340,8 @@ export default {
     }
 
     .close{
-      margin-top: 6vh;
+      margin: 7.5vh 0 4px 0;
+      font-size: 1.5rem;
     }
   }
 

@@ -128,7 +128,6 @@ export default {
 
 #profile{
   justify-content: center;
-  padding: 1%;
 }
 
 .profile_pic {
@@ -167,6 +166,7 @@ a:hover{
 .counts{
   width: 20vw;
   margin: 0 auto;
+  margin-bottom: -15px;
 }
 
 ul > li{
@@ -228,7 +228,7 @@ ul > li{
   }
   
   .counts{
-    width: 40vw;
+    width: 41vw;
   }
 
   .sections > li > button{
