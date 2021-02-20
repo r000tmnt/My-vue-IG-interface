@@ -88,7 +88,6 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
-  width: 750px;
 }
 
 .large > .enlarge{
@@ -118,5 +117,11 @@ export default {
   .large{
     width: 90vw;
   }
+}
+
+@media screen and (max-width: 576px) {
+  #showMentioned{
+  width: 35vw;
+}
 }
 </style>

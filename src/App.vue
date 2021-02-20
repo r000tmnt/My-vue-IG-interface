@@ -12,6 +12,7 @@
   <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
   <displayMention v-if="currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
+  <footer>&copy; 2021 ParkCorner</footer>
 </template>
 
 <script>
@@ -304,5 +305,9 @@ header{
   border-radius: 10px;
   color: white;
   cursor: pointer;
+}
+
+footer{
+  text-align: center;
 }
 </style>

@@ -192,7 +192,7 @@ export default {
 
 @media screen and (max-width: 683px) {
  .medias{
-   width: 31vw;
+   width: 30.5vw;
  } 
 }
 
