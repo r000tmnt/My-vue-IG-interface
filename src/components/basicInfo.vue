@@ -244,6 +244,7 @@ ul > li{
 
  .biography > h1{
    font-size: 1.5rem;
+   transition: 0.5s ease-in;
  }
 
  .biography > h4{

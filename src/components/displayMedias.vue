@@ -140,6 +140,12 @@ export default {
   transition: 0s ease-in-out;
 }
 
+.medias::after{
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
 .more{
   padding: 0.5vh 0 0.5% 0.5%;
   display: flex;
@@ -167,62 +173,37 @@ export default {
  } 
 }
 
-@media screen and (max-width: 995px) {
+@media screen and (max-width: 938px) {
  #photos{
    width: 99%;
  }
 
  .medias{
-   width: 31.2vw;
- } 
-}
-
-@media screen and (max-width: 915px) {
- .medias{
-   width: 31.1vw;
- } 
-}
-
-@media screen and (max-width: 814px) {
- .medias{
    width: 31vw;
+   height: unset;
  } 
 }
 
 @media screen and (max-width: 734px) {
  .medias{
-   width: 30.9vw;
-   height:25vh;
+   width: 30.5vw;
  } 
 }
 
-@media screen and (max-width: 668px) {
+@media screen and (max-width: 683px) {
  .medias{
-   width: 30.8vw;
- } 
-}
-
-@media screen and (max-width: 612px) {
- .medias{
-   width: 30.7vw;
+   width: 31vw;
  } 
 }
 
 @media screen and (max-width: 570px) {
  .medias{
    width: 32vw;
-   height:20vh;
    margin: 0!important;
  }
 
  .showMore{
    width: unset;
- } 
-}
-
-@media screen and (max-width: 467px) {
- .medias{
-   height:17vh;
  } 
 }
 </style>
