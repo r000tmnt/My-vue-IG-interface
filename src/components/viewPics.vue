@@ -202,7 +202,7 @@ export default {
     float: right;
     font-size: 1.2rem;
     cursor: pointer;
-    margin: 1.5vh 1vw 0 0;
+    margin: 14vh 1vw 0 0;
     color: white ;
     position: relative;
     z-index: 2;

@@ -137,7 +137,7 @@ export default {
   height: 295px;
   margin: 0.5%;
   cursor: pointer;
-  transition: .5s ease-in-out;
+  transition: 0s ease-in-out;
 }
 
 .more{
@@ -173,7 +173,7 @@ export default {
  }
 
  .medias{
-   width: 31.3vw;
+   width: 31.2vw;
  } 
 }
 
@@ -210,7 +210,7 @@ export default {
 
 @media screen and (max-width: 570px) {
  .medias{
-   width: 32.4vw;
+   width: 32vw;
    height:20vh;
    margin: 0!important;
  }
