@@ -5,9 +5,9 @@
 
 <div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pauseClick" @dblclick="goBack">
   
-  <div class="showStory" v-for="n in sts" :key="n">
+  <div class="showStory">
     <center id="timeCount"></center>
-    <div class="main"><img :src="n.url" alt="Not Found"></div>
+    <div class="main"><img :src="sts[storyIndex].url" alt="Not found"></div>
   </div>
   
 </div>
@@ -25,16 +25,15 @@ export default {
     return{
       timer: null,
       count: 0,
-      pause: false
+      pause: false,
+
+      storyIndex: 0
     }
   },
   methods: {
-    hideStories(){
-      var stories = document.querySelectorAll(".main");
-      if(stories.length > 1){
-        for(let i=0; i <= stories.length; i++){
-          stories[i+1].style.display = 'none';
-        }
+    checkStories(){
+      if(this.sts.length > 0){
+        this.storyIndex = this.storyIndex+1;
       }
     },
 
@@ -88,7 +87,7 @@ export default {
   },
   created(){
       this.countDown();
-      this.hideStories();
+      this.checkStories();
   }
 }
 </script>
@@ -111,6 +110,7 @@ export default {
   transform: translate(-50%, -50%);
   position: absolute;
   margin-top: 20vh;
+  color:white;
 }
 
 #hasStories{

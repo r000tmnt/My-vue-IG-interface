@@ -19,18 +19,20 @@
             <h4>{{$store.state.basic.bio}}
               <a :href="$store.state.basic.web">{{$store.state.basic.web}}</a> 
             </h4>
+
+            <ul class="counts flex">
+              <li>追蹤:{{$store.state.basic.follower}}</li>
+              <li>追蹤者:{{$store.state.basic.followed}}</li>
+              <li>上傳:{{$store.state.basic.medias}}</li>
+            </ul>
           </div>
       </div>
 
-       <ul class="counts flex">
-            <li><h4>追蹤:{{$store.state.basic.follower}}</h4></li>
-            <li><h4>追蹤者:{{$store.state.basic.followed}}</h4></li>
-            <li><h4>上傳:{{$store.state.basic.medias}}</h4></li>
-       </ul>
+       
 
        <ul class="sections flex">
-         <li><button class="section post here" @click="viewPosts()">貼文</button></li>
-         <li><button class="section mention" @click="viewMentions()">標註</button></li>
+         <li class="section post here" @click="viewPosts()">貼文</li>
+         <li class="section mention" @click="viewMentions()">標註</li>
        </ul>
           
   </div>
@@ -45,10 +47,11 @@ export default {
   },
   methods: {
     viewPosts(){
+      this.$store.fadeIN = false;
       this.$parent.currentLocation = 'post';
       var _where = document.querySelector(".post")
       this.checkWhere(_where);
-      this.$store.state.mediaIndex = 9 //Reset images. 
+      this.$store.state.mediaIndex = 9 //Reset images 
       console.log(this.$parent.currentLocation)
     },
 
@@ -88,11 +91,12 @@ export default {
 
 .here{
   color:goldenrod!important;
+  border-bottom: 1px solid white;
 }
 
 .here::before{
   content: ">";
-  color: #232;
+  color: white;
   display: inline-block;
   font-size: 1.2rem;
   font-weight: bold;
@@ -114,10 +118,10 @@ export default {
 
 #banner{
   width: 100%;
-  height: 30vh;
+  height: 19.5vh;
   position: absolute;
   z-index: -1;
-  opacity: 0.9;
+  opacity: 0.5;
 }
 
 #fromData{
@@ -127,6 +131,7 @@ export default {
 
 #profile{
   justify-content: center;
+  padding-top: 10px;
 }
 
 .profile_pic {
@@ -166,11 +171,14 @@ a:hover{
   width: 20vw;
   margin: 0 auto;
   margin-bottom: -15px;
+  padding: 0;
+  font-weight: bold;
 }
 
 ul > li{
   list-style: none;
-  margin:0 1vw;
+  margin:0 1vw 0 0;
+  padding: 1%;
 }
 
 .sections{
@@ -178,6 +186,10 @@ ul > li{
   margin: 0 auto;
   padding: 1vh 0;
   border-top: 1px solid #232;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  margin-top: 25px;
 }
 
 .sections > li > button{

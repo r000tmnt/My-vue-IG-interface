@@ -5,11 +5,11 @@
 
 <div id="mentioned" v-else>
   <div id="showMentioned" v-for="n in mentions" :key="n">
-    <img :src="n.url" alt="Not found" @click="enlarge(n)">
+    <img :src="n.url" alt="Not found" @click="larger(n)">
 
-    <div class="large">
+    <div class="large" v-if="enlarge.clicked === true">
       <button class="close" @click="close">X</button>
-      <img class="enlarge" src="" alt="">
+      <img class="enlarge" :class="{fadeIN: fadeIN}" :src="enlarge.source" alt="Not found">
     </div>
   </div>
 </div>
@@ -23,19 +23,28 @@ export default {
   props: {
     mentions: {}
   },
+
+  data(){
+    return{
+      fadeIN: false,
+
+      enlarge: {
+        clicked: false,
+        source: '',
+      },
+    }
+  },
+
   methods: {
-    enlarge(n){
-      var large = document.querySelector(".large");
-      var enlarge = document.querySelector(".enlarge");
-      enlarge.setAttribute("src", n.url); 
-      large.style.display = 'block';
-      large.classList.add("fadeIN")
+    larger(n){
+      this.fadeIN = true;
+      this.enlarge.clicked = true;
+      this.enlarge.source = n.url
     },
 
     close(){
-      var large = document.querySelector(".large");
-      large.style.display = 'none';
-      large.classList.remove("fadeIN")
+      this.enlarge.clicked = false;
+      this.fadeIN = false;
     }
   }
 }
@@ -63,6 +72,7 @@ export default {
   transform: translate(-50%, -50%);
   position: absolute;
   margin-top: 20vh;
+  color: white;
 }
 
 #mentioned{
@@ -74,16 +84,19 @@ export default {
 }
 
 #showMentioned{
-  width: 20vw;
+  width: 295px;
+}
+
+#showMentioned::after{
+  padding-bottom: 100%;
 }
 
 #showMentioned > img{
   max-width: 100%;
+  cursor: pointer;
 }
 
 .large{
-  opacity: 0;
-  display: none;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

@@ -18,7 +18,9 @@ export default createStore({
 
       mediaIndex: 9, //defalut number
 
-      fadeIN: false
+      fadeIN: false,
+
+      scrollY: ''
       
   },
   mutations: {

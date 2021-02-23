@@ -1,56 +1,60 @@
 <template style="position: relative" v-model="mediaComment">
-<div class="modal">
-  <button class="close" @click="closeModal">X</button>
-  <div style="clear: both"></div>
-  <div class="forFlex flex">
-    <div id="view">
-      <img id="pic" :src="media.url" alt="not found">
-    </div>
+<div class="modal" :style="{'margin-top' : $store.state.scrollY}">
+  <div id="forCenter">
+    <button class="close" @click="closeModal">X</button>
+    <div style="clear: both"></div>
 
-    <div id="info">
-    <div class="profile flex">
-       <img :src="$store.state.basic.profile_pic" alt="">
-      <span>{{$store.state.basic.userName}}</span>
-      
-      <div class="subInfo flex">
-        <div class="likes">{{media.likes}}個讚</div>
-        &nbsp;&nbsp;
-        <div class="comments_count">{{media.comments}}個留言</div>
-      </div>
-    </div>
-
-    <div class="caption">
-      <h4>{{media.caption}}</h4>
-    </div>
-
-    <div class="comments">
-      <div class="input">
-        <input type="text" id="pushNew" @keydown.enter="pushComment" placeholder="留言">
-        <button class="push">
-          <img src="../assets/sent.png" alt="Not found" @click="pushComment">
-        </button>
-      </div>
-
-      <div id="noComment" v-if="$parent.theMediaComment.length === 0">
-        <h4>尚無留言，搶個頭香吧。</h4>
-      </div>
-
-      <div class="comment_list" v-else>
-
-      <section>
-        <div class="vistor" v-for="(n, index) in mediaComment" :key="n.id">
-          <div class="comment">
-            <button class="del" @click="deleteComment(n, index)">X</button>
-            <h4>{{n.userName}}: {{n.text}}</h4>
-            <small>{{n.time}}</small>
-          </div>
+      <div class="forFlex flex">
+        <div id="view">
+          <img id="pic" :src="media.url" alt="not found">
         </div>
-      </section>
+
+        <div id="info">
+            <div class="profile flex">
+              <img :src="$store.state.basic.profile_pic" alt="">
+              <span>{{$store.state.basic.userName}}</span>
+            </div>
+
+            <div class="subInfo flex">
+              <div class="likes">{{media.likes}}個讚</div>
+              &nbsp;&nbsp;
+              <div class="comments_count">{{media.comments}}個留言</div>
+            </div>
+
+            <div class="caption text-align">
+            {{media.caption}}
+            </div>
+
+            <div class="comments text-align">
+              <div class="input">
+                <textarea id="pushNew" placeholder="留言" :style="{'height' : autoResize + 'px'}" @keyup.enter="textAreaResize()"></textarea>
+                <button class="push">
+                  <img src="../assets/sent.png" alt="Not found" @click="pushComment">
+                </button>
+              </div>
+
+              <div id="noComment text-align" v-if="$parent.theMediaComment.length === 0">
+                尚無留言，搶個頭香吧。
+              </div>
+
+              <div class="comment_list" v-else>
+
+                <section>
+                  <div class="vistor" v-for="(n, index) in mediaComment" :key="n.id">
+                    <div class="comment">
+                      <button class="del" @click="deleteComment(n, index)">X</button>
+                      <h4>{{n.username}}: {{n.text}}</h4>
+                      <small>{{n.timestamp}}</small>
+                    </div>
+                  </div>
+                </section>
         
+              </div>
+            </div>
+        </div>
       </div>
-    </div>
   </div>
-  </div>
+
    
 
   
@@ -65,24 +69,22 @@ export default {
     media: {},
     mediaComment: {}
   },
+  
+  data(){
+    return{
+      autoResize: 20
+    }
+  },
+
   methods: {
-    checkIMG(){//Check if the image is protrait or landscape
-      var view = document.getElementById("view");
-      var pic = document.getElementById("pic");
-      var info = document.getElementById("info");
-      var sHeigth = screen.height;
+    textAreaResize(){
+      this.autoResize = this.autoResize+20;
 
-      if(view.offsetHeight > sHeigth){
-        view.style.width = '80vh';
-      }
-
-      if(pic.offsetWidth < view.offsetWidth){
-        info.style['margin-left'] = '-30vw';
-      }else if(view.offsetHeight < sHeigth){
-        info.style['margin-left'] = '0!important';
+      if(this.autoResize > 60){ //Limit
+        this.autoResize = 60
       }
     },
-
+    
     pushComment(){
       var newComment = document.getElementById('pushNew');
       var vm = this;
@@ -125,22 +127,10 @@ export default {
 
     closeModal(){
       this.$parent.isViewing = false;
-
       this.$parent.theMediaComment.splice(0, this.$parent.theMediaComment.length); //clear props
-
-      var body = document.body;
-      body.removeAttribute("class", "modal-open");
-
-      // const scrollY = body.style.top; //fix the positon at the top of the screen
-      body.style.position = '';
-      // window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      this.$parent.addClass = true;
+      this.$parent.defineScrollbar();
     }
-  },
-
-  created(){
-    this.$nextTick(()=>{
-      this.checkIMG();
-    })
   }
 }
 </script>
@@ -149,10 +139,16 @@ export default {
 <style scoped>
   .flex{
     display: flex;
+    justify-content: center;
+  }
+
+  .text-align{
+    padding: 4%;
+    text-align: center;
   }
 
   .modal{
-    background-color: rgba(34, 51, 34, 0.9);
+    background-color: rgba(34, 51, 34, 0.7);
     top: 50%;
     left: 50%;
     width: 100vw;
@@ -160,49 +156,64 @@ export default {
     transform: translate(-50%, -50%);
     position: absolute;
     color:white;
-    padding-bottom: 14%;
+    box-shadow: 5px 8px 5px #232;
+  }
+
+  #forCenter{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
   }
 
   .forFlex{
-    justify-content: center;
+    /* border: 1px solid red; */
+    width: 950px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
   }
 
   #view{
-    margin: 3vh 5vw 0 5vw;
+    margin-bottom: -5px;
   }
 
   #view > img{
     max-width: 100%;
   }
 
+  #info{
+    width: 28vw;
+    padding-top: 1vh;
+    background-color: #232;
+    color:#fff;
+  }
+
   .profile{
     flex-wrap: wrap;
-    padding: 20% 0 1.5% 0;
-    border-bottom: 1px solid white;
+    padding: 0 0 1.5% 0;
   }
 
   .profile > span{
     /* border: 1px solid red; */
     display: inline-block;
-    line-height: 6vh;
-    font-size: 1.5rem;
-    margin: 0 1vw ;
+    font-size: 1rem;
+    margin: 1.5vh 1vw ;
   }
 
   .profile > img{
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
   }
 
   .close{
-    border:0;
     background: none;
     border: none;
     float: right;
     font-size: 1.2rem;
     cursor: pointer;
-    margin: 14vh 1vw 0 0;
+    margin: 1%;
     color: white ;
     position: relative;
     z-index: 2;
@@ -219,11 +230,8 @@ export default {
   }
 
   .subInfo{
-    padding: 2vh 0 0 0;
-  }
-
-  section{
-    background-color: #232;
+    padding: 2% 0 1.5% 0;
+    border-bottom: 1px solid #fff;
   }
 
   .comment{
@@ -247,17 +255,22 @@ export default {
   }
 
   #pushNew{
-    width: 300px;
+    border: none;
+    resize: none;
     transition: 0.5s ease-in-out;
+    width: 14vw;
+  }
+
+  #pushNew:focus{
+    outline: none;
   }
   
   .push{
     background: none;
     border: none;
-    width: 24px;
+    width: 26px;
     padding: 0;
-    margin: 0 0.3%;
-    position: absolute;
+    margin-left: 3px;
     cursor: pointer;
   }
 
@@ -285,7 +298,7 @@ export default {
     transition: 0.5s;
   }
 
-  @media screen and (max-width: 1442px) {
+  /* @media screen and (max-width: 1442px) {
     .modal{
       overflow: scroll;
     }
@@ -365,5 +378,5 @@ export default {
     .push{
       margin: 0 1.5%;
     }
-  }
+  } */
 </style>

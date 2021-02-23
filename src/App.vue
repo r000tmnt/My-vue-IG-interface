@@ -1,6 +1,6 @@
 <template>
 
-  <header> 
+  <header class="bg_color"> 
     My Vue-IG-Interface
   </header>
   <div id="fb-login">
@@ -12,7 +12,7 @@
   <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
   <displayMention v-if="currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
-  <footer>&copy; 2021 ParkCorner</footer>
+  <footer class="bg_color">&copy; 2021 ParkCorner</footer>
 </template>
 
 <script>
@@ -39,7 +39,8 @@ export default {
 
         media_mentions:{},
 
-        currentLocation: 'post'
+        currentLocation: 'post',
+        modal_open: false,
     }
   },
   methods: {
@@ -269,9 +270,15 @@ body{
   margin: 0;
   padding: 0;
   font-family: 'Courier New', Courier, monospace;
+  background-color: rgb(20, 20, 20);
 }
 
-body.modal-open{
+.bg_color{
+  background-color: #383434;
+  color: white;
+}
+
+.modal_open{
   overflow: hidden;
 }
 
@@ -295,5 +302,10 @@ header{
 
 footer{
   text-align: center;
+  padding: 1%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
 </style>

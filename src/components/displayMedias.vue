@@ -31,44 +31,30 @@ export default {
       return{
           isViewing: false,
           clickedMedia: {},
-        theMediaComment: [] 
+        theMediaComment: [],
+        
+        addClass: false,
+        className: 'modal_open'
       }
   },
   methods:{
       viewing(n){
       this.isViewing = true;
-      this.clickedMedia = {id: this.urls[n-1].id, //Push the info of the photo  
-                           likes: this.urls[n-1].likes, 
-                           url: this.urls[n-1].url,
-                           caption: this.urls[n-1].caption,
-                           comments: this.urls[n-1].comments,
-                           time: this.urls[n-1].time};
-
-      var theComment = new Array();
+      this.$parent.modal_open = true;
+      this.clickedMedia = this.urls[n-1] //Push the info of the photo  
       var Clength = this.$store.state.media_comments.length;
 
       for(let i=0; i < Clength; i++){
         if(this.urls[n-1].id === this.$store.state.media_comments[i].media.id){ //Check if both id matches      
 
-          theComment.push({mediaID: this.$store.state.media_comments[i].media.id, //Push the info of the comment
-                           id: this.$store.state.media_comments[i].id,
-                           userName: this.$store.state.media_comments[i].username,
-                           text: this.$store.state.media_comments[i].text,
-                           time: this.$store.state.media_comments[i].timestamp});
+          this.theMediaComment.push(this.$store.state.media_comments[i]) //Push the info of the comment
         }
       }
-      this.theMediaComment = theComment;
 
       console.log(this.urls[n-1].id, this.theMediaComment)                    
-      const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-
-      this.$nextTick(()=>{
-        var modal = document.querySelector(".modal");
-        var body = document.querySelector("body");
-        body.setAttribute("class", "modal-open");
-        // body.style.position = 'fixed';
-        modal.style['margin-top'] = `${scrollY}`; //push modal to the screen positon
-      })      
+      this.$store.state.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+      this.addClass = false;
+      this.defineScrollbar();
     },
 
     showMore(){
@@ -78,6 +64,16 @@ export default {
           top: document.body.scrollHeight,
           behavior: "smooth"});
       })
+    },
+
+    defineScrollbar(){
+      const body = document.body;
+
+      if(this.addClass === false){
+        body.classList.add(this.className);
+      }else{
+        body.classList.remove(this.className)
+      }
     }
   }
 }
@@ -98,8 +94,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   flex: 3;
-  border-left: 1px solid lightgray;
-  border-right: 1px solid lightgray;
   width: 920px;
   margin: 0 auto;
   transition: .5s ease-in-out;
@@ -124,6 +118,7 @@ export default {
   padding: 0.5vh 0 0.5% 0.5%;
   display: flex;
   justify-content: center;
+  margin-bottom: 60px;
 }
 
 .showMore{
