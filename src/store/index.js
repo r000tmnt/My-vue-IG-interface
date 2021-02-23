@@ -14,7 +14,12 @@ export default createStore({
 
       media_comments: {
         // id: "", text: "", time: "", userName: "",
-      }
+      },
+
+      mediaIndex: 9, //defalut number
+
+      fadeIN: false
+      
   },
   mutations: {
     toBasic(state, basicData){
@@ -26,6 +31,15 @@ export default createStore({
         state.basic.profile_pic = basicData.profile_picture_url;
         state.basic.userName = basicData.username;
         state.basic.web = basicData.website;
+    },
+
+    showMore(state){
+      if(state.basic.medias - state.mediaIndex > 9){//if there's more, only reveal next 9 images
+        state.mediaIndex = state.mediaIndex+9;
+      }else{
+        state.mediaIndex = state.basic.medias;//if there's 9 or less, show the rest.
+      }
+      state.fadeIN = true;
     },
 
     toComment(state, sortComment){

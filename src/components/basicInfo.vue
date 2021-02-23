@@ -48,8 +48,7 @@ export default {
       this.$parent.currentLocation = 'post';
       var _where = document.querySelector(".post")
       this.checkWhere(_where);
-      var vm = this;
-      this.$parent.hideImages(vm); //Without this function, switching back will reveal all images. 
+      this.$store.state.mediaIndex = 9 //Reset images. 
       console.log(this.$parent.currentLocation)
     },
 

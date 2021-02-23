@@ -1,8 +1,8 @@
 <template>
 <div class="frame">
-  <div id="photos">
-      <div class="medias" v-for="n in urls" :key="n" :style="{ 
-        'background-image': 'url(' + n.url + ')', 
+  <div id="photos" v-if="urls.length > 0">
+      <div class="medias" :class="{fadeIN: $store.state.fadeIN}" v-for="n in $store.state.mediaIndex" :key="n" :style="{ 
+        'background-image': 'url(' + urls[n-1].url + ')', 
         'background-size': 'cover',
         'background-position':'center'}" @click="viewing(n)">
         </div>
@@ -11,7 +11,7 @@
   </div>
 </div>
 
-    <div class="more">
+    <div class="more" v-if="$store.state.basic.medias !== $store.state.mediaIndex">
       <button class="showMore" @click="showMore()">更多</button>
     </div>
 </template>
@@ -22,7 +22,7 @@ import viewPics from './viewPics.vue'
 export default {
   name: 'displayMedias',
   props: {
-      urls: {}
+      urls: []
   },
   components: {
     viewPics 
@@ -37,18 +37,18 @@ export default {
   methods:{
       viewing(n){
       this.isViewing = true;
-      this.clickedMedia = {id: n.id, //Push the info of the photo  
-                           likes: n.likes, 
-                           url: n.url,
-                           caption: n.caption,
-                           comments: n.comments,
-                           time: n.time};
+      this.clickedMedia = {id: this.urls[n-1].id, //Push the info of the photo  
+                           likes: this.urls[n-1].likes, 
+                           url: this.urls[n-1].url,
+                           caption: this.urls[n-1].caption,
+                           comments: this.urls[n-1].comments,
+                           time: this.urls[n-1].time};
 
       var theComment = new Array();
       var Clength = this.$store.state.media_comments.length;
 
       for(let i=0; i < Clength; i++){
-        if(n.id === this.$store.state.media_comments[i].media.id){ //Check if both id matches      
+        if(this.urls[n-1].id === this.$store.state.media_comments[i].media.id){ //Check if both id matches      
 
           theComment.push({mediaID: this.$store.state.media_comments[i].media.id, //Push the info of the comment
                            id: this.$store.state.media_comments[i].id,
@@ -59,7 +59,7 @@ export default {
       }
       this.theMediaComment = theComment;
 
-      console.log(n.id, this.theMediaComment)                    
+      console.log(this.urls[n-1].id, this.theMediaComment)                    
       const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
 
       this.$nextTick(()=>{
@@ -72,38 +72,12 @@ export default {
     },
 
     showMore(){
-      var medias = document.querySelectorAll(".medias");
-      var isHidden = [];
-      for(let i=0; i < medias.length; i++){  
-
-        if(medias[i].style.display === 'none'){
-          isHidden.push(medias[i]);
-          
-          if(isHidden.length > 9){ //if there's more, only reveal next 9 images
-            for(let j=0; j < 9; j++){
-              isHidden[j].style.display = 'block';
-              isHidden[j].classList.add("fadeIN");
-            }
-          window.scrollTo({ //move to the bottom of screen
-            top: document.body.scrollHeight,
-            behavior: "smooth"});
-          }
-          
-          if(isHidden.length <= 9){ //if there's 9 or less, show the rest.
-            medias[i].style.display = 'block';
-            medias[i].classList.add("fadeIN")
-            window.scrollTo({ //move to the bottom of screen
-            top: document.body.scrollHeight,
-            behavior: "smooth"});
-          }
-        }
-
-        if(isHidden.length === 0){ //if there's nothing more, hide the button
-            let button = document.querySelector(".showMore");
-            button.style['visibility'] = 'hidden';
-          }
-      }
-      console.log(isHidden)
+      this.$store.commit('showMore');
+      this.$nextTick(()=>{
+        window.scrollTo({ //move to the bottom of screen
+          top: document.body.scrollHeight,
+          behavior: "smooth"});
+      })
     }
   }
 }

@@ -152,8 +152,7 @@ export default {
           console.log(src);
 
           var pics = new Array();
-         
-          
+              
           for(let i=0; i < src.data.length; i++){
             pics.push(
               {id: src.data[i].id,
@@ -165,7 +164,7 @@ export default {
           }
             vm.media_urls = pics;
             vm.getComments(vm, IGid, acToken);
-            vm.hideImages(vm);
+            // vm.hideImages(vm);
         });
     },
 
@@ -222,19 +221,6 @@ export default {
       var theTime = new Date(timeCode).getTime();
       var whatTime = new Date(theTime).toDateString();
       return whatTime;
-    },
- 
-    hideImages(vm){
-      vm.$nextTick( ()=>{
-        var images = document.querySelectorAll(".medias");
-        
-        for(let i=0; i < images.length; i++){
-          if(i > 8){
-            images[i].style['display'] = 'none';
-            images[i].style['opacity'] = 0;
-          }
-        }
-      });
     },
 
     scroll(){
