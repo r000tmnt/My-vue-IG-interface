@@ -1,4 +1,4 @@
-<template>
+<template v-model="urls">
 <div class="frame">
   <div id="photos" v-if="urls.length > 0">
       <div class="medias" :class="{fadeIN: $store.state.fadeIN}" v-for="n in $store.state.mediaIndex" :key="n" :style="{ 

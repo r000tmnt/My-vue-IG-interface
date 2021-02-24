@@ -1,4 +1,4 @@
-<template style="position: relative" v-model="count">
+<template style="position: relative" v-model="sts">
 <div id="noStory" v-if="Object.keys($parent.media_stories).length === 0">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
@@ -7,7 +7,7 @@
   
   <div class="showStory">
     <center id="timeCount"></center>
-    <div class="main"><img :src="sts[storyIndex].url" alt="Not found"></div>
+    <div class="main"><img :src="sts[storyIndex].media_url" alt="Not found"></div>
   </div>
   
 </div>
@@ -32,19 +32,11 @@ export default {
   },
   methods: {
     checkStories(){
-      if(this.sts.length > 0){
-        this.storyIndex = this.storyIndex+1;
-      }
+      this.storyIndex++;
     },
 
     goBack(){
       this.$parent.currentLocation = 'post';
-      var post = document.querySelector(".post");
-      var story = document.querySelector(".story");
-      var vm = this;
-      post.classList.add("here");
-      story.classList.remove("here");
-      this.$parent.hideImages(vm);
     },
 
     countDown(){
@@ -57,17 +49,10 @@ export default {
                        this.count = 0;
                        this.pauseClick();
                     }else if(this.count === 15 && this.sts.length > 1){
-                       var stories = document.querySelectorAll(".main");
-                       for(let i=0; i < this.sts.length; i++){ // If there's more
-                          stories[i+1].innerHTML = '<img src='+ this.sts[i+1].url +'>';
-                          stories[i].style.display = 'none'
-                          stories[i+1].style.display = 'block';
-                       }
-                      }
-      
-                    }, 1000);
-      }
-      
+                      this.checkStories();
+                    }
+                  }, 1000);
+      }  
     },
 
     pauseClick(){
@@ -87,7 +72,6 @@ export default {
   },
   created(){
       this.countDown();
-      this.checkStories();
   }
 }
 </script>
@@ -99,17 +83,12 @@ export default {
   to{ transform: translateX(100%); }
 }
 
-#noStory{
-  position: relative;
-}
-
 #noStory > h1{
   display: inline-block;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
-  margin-top: 20vh;
   color:white;
 }
 

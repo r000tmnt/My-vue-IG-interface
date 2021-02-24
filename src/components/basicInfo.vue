@@ -9,11 +9,10 @@
   <div id="fromData">
       <div id="profile" class="flex">
         <div class="profile_pic">
-          <a class="section story" @click="viewStroies()">
+          <a class="section story" :class="{Here: $parent.currentLocation === 'story'}" @click="viewStroies()">
             <img :src="$store.state.basic.profile_pic" alt="Not Found">
           </a>
         </div>
-
           <div class="biography">
              <h1>{{$store.state.basic.userName}}</h1>
             <h4>{{$store.state.basic.bio}}
@@ -28,11 +27,9 @@
           </div>
       </div>
 
-       
-
        <ul class="sections flex">
-         <li class="section post here" @click="viewPosts()">貼文</li>
-         <li class="section mention" @click="viewMentions()">標註</li>
+         <li class="section post" :class="{here: $parent.currentLocation === 'post'}" @click="viewPosts()">貼文</li>
+         <li class="section mention" :class="{here: $parent.currentLocation === 'mention'}" @click="viewMentions()">標註</li>
        </ul>
           
   </div>
@@ -43,40 +40,37 @@
 <script>
 export default {
   name: 'basicInfo',
-  props: {
-  },
   methods: {
     viewPosts(){
-      this.$store.fadeIN = false;
+      this.$store.state.fadeIN = false;
       this.$parent.currentLocation = 'post';
-      var _where = document.querySelector(".post")
-      this.checkWhere(_where);
       this.$store.state.mediaIndex = 9 //Reset images 
       console.log(this.$parent.currentLocation)
+
+      var vm = this;
+      var IGid = this.$store.state.Needed.IGid;
+      var acToken = this.$store.state.Needed.acToken;
+      this.$parent.getMedias(vm, IGid, acToken);
     },
 
     viewStroies(){
       this.$parent.currentLocation = 'story';
-      var _where = document.querySelector(".story")
-      this.checkWhere(_where);
-      console.log(this.$parent.currentLocation) 
+      console.log(this.$parent.currentLocation)
+      
+      var vm = this;
+      var IGid = this.$store.state.Needed.IGid;
+      var acToken = this.$store.state.Needed.acToken;      
+      this.$parent.getStories(vm, IGid, acToken);
     },
 
     viewMentions(){
       this.$parent.currentLocation = 'mention';
-      var _where = document.querySelector(".mention")
-      this.checkWhere(_where);
       console.log(this.$parent.currentLocation);
-    },
 
-    checkWhere(_where){
-      var here = document.querySelector(".here");
-      here.classList.remove("here")
-      _where.classList.add("here");
-
-      if(_where.classList.contains("story")){
-        _where.classList.add("Here");
-      }
+      var vm = this;
+      var IGid = this.$store.state.Needed.IGid;
+      var acToken = this.$store.state.Needed.acToken;      
+      this.$parent.getTags(vm, IGid, acToken);
     }
   }
 }
@@ -102,10 +96,6 @@ export default {
   font-weight: bold;
   animation: ishere 1s ease-in-out infinite alternate-reverse !important;
   z-index: -1;
-}
-
-.Here::before{
-  content: none;
 }
 
 .flex{
@@ -192,17 +182,8 @@ ul > li{
   margin-top: 25px;
 }
 
-.sections > li > button{
-  border: 1px solid rgba(34, 51, 34, 0);
-  border-radius: 10px;
+.sections > li:hover{
   color: steelblue;
-  cursor: pointer;
-  width: 10vw;
-  font-size: 1.2rem;
-}
-
-.sections > li > button:hover{
-  border-bottom: 1px solid #232;
   transition: 0.5s;
 }
 

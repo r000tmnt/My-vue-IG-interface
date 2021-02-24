@@ -73,55 +73,58 @@ export default {
           console.log(IGdata);
 
           var IGid = IGdata.instagram_business_account.id;
+          vm.$store.state.Needed.IGid = IGid;
           vm.getBasic(vm, IGid, acToken);
+          vm.getStories(vm, IGid, acToken)
+          vm.getMedias(vm, IGid, acToken);
+          vm.getTags(vm, IGid, acToken);          
+          vm.getComments(vm, IGid, acToken);
           });
     },
 
     getBasic(vm, IGid, acToken){
       window.FB.api(
         IGid,
-        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website,stories", "access_token": acToken},
+        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website", "access_token": acToken},
           function(basicData){
           console.log(basicData);
         
           vm.$store.commit('toBasic', basicData);
-
-          //get stories id
-          if(!basicData.stories){ //The api can only retrun stories within 24 hours
-            var emptyMessage = "No stories in 24 hours.";
-            console.log(emptyMessage)
-          }else{
-            var S_id = basicData.stories.data;
-            var stories_id = new Array();
-            var stories = new Array();
-
-            console.log(basicData.stories.data);
-            for(let i=0; i< S_id.length; i++){
-              stories_id.push(basicData.stories.data[i].id);
-               vm.getStories(vm, stories, stories_id, acToken);
-            }
-          }
-          vm.getMedias(vm, IGid, acToken);
-          vm.getTags(vm, IGid, acToken);
       });
     },
 
-    getStories(vm, stories, stories_id, acToken){
-      for(let i=0; i < stories_id.length; i++){ //loop through each id
-        window.FB.api(
-          stories_id[i],
-          'GET',
-          {"fields":"caption,media_url,timestamp", "access_token": acToken},
-          function(storyData) {
-              console.log(storyData);
+    getStories(vm, IGid, acToken){
+      var stories_id = new Array();
+      var stories = new Array();
+      window.FB.api(
+        IGid,
+        {"fields":"stories", "access_token": acToken},
+          function(sData){
+          console.log(sData);
 
-              stories.push({id: storyData.id,
-                            caption: storyData.caption,
-                            url: storyData.media_url,
-                            time: storyData.timestamp}) 
+          //get stories id
+          if(!sData.stories){ //The api can only retrun stories within 24 hours
+            console.log("No stories in 24 hours.")
+          }else{
+            var S_id = sData.stories.data;
+            console.log(sData.stories.data);
+            for(let i=0; i< S_id.length; i++){
+              stories_id.push(sData.stories.data[i].id);
+            }
+
+                  for(let i=0; i < stories_id.length; i++){ //loop through each id
+                  window.FB.api(
+                    stories_id[i],
+                    'GET',
+                    {"fields":"caption,media_url,timestamp", "access_token": acToken},
+                    function(storyData) {
+                        console.log(storyData);
+                       stories.push(storyData) 
+                    }
+                  );
+                }
           }
-        );
-      }
+      });
       console.log(stories);
       vm.media_stories = stories;
     },
@@ -164,8 +167,6 @@ export default {
                 time: src.data[i].timestamp});
           }
             vm.media_urls = pics;
-            vm.getComments(vm, IGid, acToken);
-            // vm.hideImages(vm);
         });
     },
 
@@ -249,6 +250,7 @@ export default {
          if(response.status === 'connected'){
             acToken = response.authResponse.accessToken;
          }
+         vm.$store.state.Needed.acToken = acToken;
          
          vm.getFBdata(vm, acToken);
        });
