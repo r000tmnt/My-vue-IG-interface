@@ -25,13 +25,18 @@
               <li>上傳:{{$store.state.basic.medias}}</li>
             </ul>
           </div>
-      </div>
+      </div>          
+  </div>
 
-       <ul class="sections flex">
-         <li class="section post" :class="{here: $parent.currentLocation === 'post'}" @click="viewPosts()">貼文</li>
-         <li class="section mention" :class="{here: $parent.currentLocation === 'mention'}" @click="viewMentions()">標註</li>
-       </ul>
-          
+  <div id="sections">
+    <ul class="flex">
+      <li class="section post" :class="{here: $parent.currentLocation === 'post'}">
+        <img src="../assets/image.svg" alt="Not found" @click="viewPosts()">
+      </li>
+      <li class="section mention" :class="{here: $parent.currentLocation === 'mention'}">
+        <img src="../assets/pin.svg" alt="Not found" @click="viewMentions()">
+      </li>
+    </ul>
   </div>
 </div>
 
@@ -78,37 +83,18 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@keyframes ishere{
-  from{ transform: translateX(0px); }
-  to{ transform: translateX(-3px); }
-}
-
 .here{
-  color:goldenrod!important;
+  filter: brightness(100);
   border-bottom: 1px solid white;
-}
-
-.here::before{
-  content: ">";
-  color: white;
-  display: inline-block;
-  font-size: 1.2rem;
-  font-weight: bold;
-  animation: ishere 1s ease-in-out infinite alternate-reverse !important;
-  z-index: -1;
 }
 
 .flex{
   display: flex;
 }
 
-.top_frame{
-  /* border: 1px solid red; */
-}
-
 #banner{
   width: 100%;
-  height: 19.5vh;
+  height: 22vh;
   position: absolute;
   z-index: -1;
   opacity: 0.5;
@@ -121,7 +107,8 @@ export default {
 
 #profile{
   justify-content: center;
-  padding-top: 10px;
+  padding: 15px;
+  color: white;
 }
 
 .profile_pic {
@@ -165,13 +152,22 @@ a:hover{
   font-weight: bold;
 }
 
+.counts > li{
+  white-space: nowrap;
+}
+
 ul > li{
   list-style: none;
   margin:0 1vw 0 0;
   padding: 1%;
 }
 
-.sections{
+#sections{
+  border-top: 1px solid white;
+  margin-top: 25px;
+}
+
+#sections > ul{
   width: 25vw;
   margin: 0 auto;
   padding: 1vh 0;
@@ -179,12 +175,15 @@ ul > li{
   justify-content: center;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  margin-top: 25px;
 }
 
-.sections > li:hover{
-  color: steelblue;
-  transition: 0.5s;
+#sections > ul > li > img{
+  filter: invert(1) brightness(0.5);
+  width: 30px;
+}
+
+#sections > ul > li{
+  margin: 0 3vw;
 }
 
 @media screen and (max-width: 1411px){
@@ -194,7 +193,6 @@ ul > li{
   
   .counts{
     width: 25vw;
-    justify-content: center;
   }
 }
 
@@ -247,17 +245,17 @@ ul > li{
    font-size: 0.78rem;
  }
 
- .counts , .sections{
+ .counts{
    width: 90%;
    justify-content: center;
- }
- 
- .sections > li > button{
-   width: 20vw;
  }
 }
 
 @media screen and (max-width: 467px) {
+ #banner{
+   height: 28vh;
+ }
+
  .profile_pic {
     margin-left: -33vw!important;
     transition: 0.5s;
@@ -271,9 +269,13 @@ ul > li{
    font-size: 0.78rem;
  }
 
- .counts , .sections{
+ .counts {
    width: 90%;
-   justify-content: center;
+   margin-top: 50px;
+ }
+
+ .sections{
+   margin-top: 0!important;
  }
  
  .sections > li > button{

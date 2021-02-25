@@ -24,7 +24,6 @@ export default {
   data(){
     return{
       timer: null,
-      count: 0,
       pause: false,
 
       storyIndex: 0
@@ -33,6 +32,7 @@ export default {
   methods: {
     checkStories(){
       this.storyIndex++;
+      this.countDown()//start counting again
     },
 
     goBack(){
@@ -42,16 +42,14 @@ export default {
     countDown(){
       if(Object.keys(this.$parent.media_stories).length > 0){//Start counting when there are stories to show
         this.timer = window.setInterval(() => {
-                    console.log(this.count++);
-
-                    if(this.count === 15 && this.sts.length === 1){ //If there's only one story
+                    if(this.sts.length === 1){ //If there's only one story
                        this.goBack();
-                       this.count = 0;
                        this.pauseClick();
                     }else if(this.count === 15 && this.sts.length > 1){
                       this.checkStories();
+                      this.pauseClick();
                     }
-                  }, 1000);
+                  }, 15000);
       }  
     },
 
@@ -133,7 +131,7 @@ center{
   background: white;
   margin-top: 0.5vh;
   color: steelblue;
-  animation: countDown 16s;
+  animation: countDown 15s;
 }
 
 .main{

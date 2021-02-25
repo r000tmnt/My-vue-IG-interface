@@ -258,7 +258,9 @@ export default {
     border: none;
     resize: none;
     transition: 0.5s ease-in-out;
-    width: 14vw;
+    width: 13vw;
+    background-color: #1e1f1e;
+    color: white;
   }
 
   #pushNew:focus{
@@ -268,7 +270,7 @@ export default {
   .push{
     background: none;
     border: none;
-    width: 26px;
+    width: 24px;
     padding: 0;
     margin-left: 3px;
     cursor: pointer;

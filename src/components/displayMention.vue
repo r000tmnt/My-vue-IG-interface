@@ -79,7 +79,7 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  padding:3%;
+  padding: 1%;
   position: relative;
 }
 

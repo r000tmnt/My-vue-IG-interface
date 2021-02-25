@@ -1,7 +1,7 @@
 <template v-model="urls">
 <div class="frame">
   <div id="photos" v-if="urls.length > 0">
-      <div class="medias" :class="{fadeIN: $store.state.fadeIN}" v-for="n in $store.state.mediaIndex" :key="n" :style="{ 
+      <div class="medias" v-for="n in $store.state.mediaIndex" :class="{fadeIN: $store.state.fadeIN}" :key="n" :style="{ 
         'background-image': 'url(' + urls[n-1].url + ')', 
         'background-size': 'cover',
         'background-position':'center'}" @click="viewing(n)">
@@ -29,10 +29,9 @@ export default {
   },
   data(){
       return{
-          isViewing: false,
-          clickedMedia: {},
+        isViewing: false,
+        clickedMedia: {},
         theMediaComment: [],
-        
         addClass: false,
         className: 'modal_open'
       }
@@ -97,21 +96,28 @@ export default {
   width: 920px;
   margin: 0 auto;
   transition: .5s ease-in-out;
+  padding: 1%;
 }
 
 .medias{
   border: 1px solid #232;
   width: 295px;
   height: 295px;
-  margin: 0.5%;
   cursor: pointer;
+  margin: 0.5%;
   transition: 0s ease-in-out;
+  opacity: 0.9;
 }
 
 .medias::after{
   content: "";
   display: block;
   padding-bottom: 100%;
+}
+
+.medias:hover{
+  opacity: 1;
+  transition: 0.5s;
 }
 
 .more{
@@ -142,9 +148,10 @@ export default {
  } 
 }
 
-@media screen and (max-width: 938px) {
+@media screen and (max-width: 955px) {
  #photos{
    width: 99%;
+   padding-right: 0!important;
  }
 
  .medias{
