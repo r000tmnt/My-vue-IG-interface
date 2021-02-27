@@ -7,20 +7,21 @@
       <button @click="getLogin">登入FB</button>
     </div>
     <div style="clear: both"></div>
-  <basicInfo></basicInfo>
-  <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
-  <displayStories v-if="currentLocation === 'story'" :sts="media_stories"></displayStories>
-  <displayMention v-if="currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
+  <basicInfo @update="updateStories($event)"></basicInfo>
+  <display-medias v-if="$store.state.currentLocation === 'post'" :urls="media_urls"></display-medias>
+  <displayStories v-if="$store.state.currentLocation === 'story'" :sts="media_stories" v-model="media_stories"></displayStories>
+  <displayMention v-if="$store.state.currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
   <footer class="bg_color">&copy; 2021 ParkCorner</footer>
 </template>
 
 <script>
-
+import { defineAsyncComponent } from 'vue'
 import basicInfo from './components/basicInfo.vue'
 import displayMedias from './components/displayMedias.vue'
-import displayStories from './components/displayStories.vue'
-import displayMention from './components/displayMention'
+import displayMention from './components/displayMention.vue'
+
+const displayStories = defineAsyncComponent(()=> import('./components/displayStories.vue'))
 
 export default {
   name: 'App',
@@ -33,13 +34,11 @@ export default {
           // id: "", url: "", caption: "", commonts: "", time: ""
         },
         
-        media_stories: {
-          // id: "", url: "", caption: "", time: ""
-        },
+        media_stories: [
+          {id: '',caption: '',  media_url: '', timestamp: ''}
+        ],
 
         media_mentions:{},
-
-        currentLocation: 'post',
         modal_open: false,
     }
   },
@@ -75,7 +74,6 @@ export default {
           var IGid = IGdata.instagram_business_account.id;
           vm.$store.state.Needed.IGid = IGid;
           vm.getBasic(vm, IGid, acToken);
-          vm.getStories(vm, IGid, acToken)
           vm.getMedias(vm, IGid, acToken);
           vm.getTags(vm, IGid, acToken);          
           vm.getComments(vm, IGid, acToken);
@@ -93,40 +91,20 @@ export default {
       });
     },
 
-    getStories(vm, IGid, acToken){
-      var stories_id = new Array();
-      var stories = new Array();
-      window.FB.api(
-        IGid,
-        {"fields":"stories", "access_token": acToken},
-          function(sData){
-          console.log(sData);
+    updateStories(val){
+      this.media_stories = val;
+      console.log(val);
+      if(this.media_stories === val){
+        console.log(this.media_stories);
+        this.$nextTick(()=>{
+          this.viewStories();
+        })
+      }
+    },
 
-          //get stories id
-          if(!sData.stories){ //The api can only retrun stories within 24 hours
-            console.log("No stories in 24 hours.")
-          }else{
-            var S_id = sData.stories.data;
-            console.log(sData.stories.data);
-            for(let i=0; i< S_id.length; i++){
-              stories_id.push(sData.stories.data[i].id);
-            }
-
-                  for(let i=0; i < stories_id.length; i++){ //loop through each id
-                  window.FB.api(
-                    stories_id[i],
-                    'GET',
-                    {"fields":"caption,media_url,timestamp", "access_token": acToken},
-                    function(storyData) {
-                        console.log(storyData);
-                       stories.push(storyData) 
-                    }
-                  );
-                }
-          }
-      });
-      console.log(stories);
-      vm.media_stories = stories;
+    viewStories(){
+      this.$store.state.currentLocation = 'story';
+      console.log(this.$store.state.currentLocation) 
     },
 
     getTags(vm, IGid, acToken){

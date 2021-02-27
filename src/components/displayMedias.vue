@@ -166,15 +166,9 @@ export default {
  } 
 }
 
-@media screen and (max-width: 683px) {
- .medias{
-   width: 30.5vw;
- } 
-}
-
 @media screen and (max-width: 570px) {
  .medias{
-   width: 32vw;
+   width: 31.5vw;
    margin: 0!important;
  }
 

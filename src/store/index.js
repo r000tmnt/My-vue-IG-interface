@@ -3,8 +3,9 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     Needed: {
-      acToken: '',
+      vm: this,
       IGid: '',
+      acToken: '',
     },
     
     basic: {
@@ -20,6 +21,8 @@ export default createStore({
       media_comments: {
         // id: "", text: "", time: "", userName: "",
       },
+
+      currentLocation: 'post',
 
       mediaIndex: 9, //defalut number
 

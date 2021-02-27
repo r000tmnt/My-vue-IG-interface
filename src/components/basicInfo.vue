@@ -9,7 +9,7 @@
   <div id="fromData">
       <div id="profile" class="flex">
         <div class="profile_pic">
-          <a class="section story" :class="{Here: $parent.currentLocation === 'story'}" @click="viewStroies()">
+          <a class="section story" :class="{Here: $parent.currentLocation === 'story'}" @click="getStories()">
             <img :src="$store.state.basic.profile_pic" alt="Not Found">
           </a>
         </div>
@@ -45,12 +45,92 @@
 <script>
 export default {
   name: 'basicInfo',
+  data(){
+    return{
+      isfetching: true,
+      getData: {}
+    }
+  },
   methods: {
+    getStories(){
+      var vm = this;
+      var stories_id = new Array();
+      window.FB.api(
+        vm.$store.state.Needed.IGid,
+        {"fields":"stories", "access_token": vm.$store.state.Needed.acToken},
+          function(sData){
+          console.log(sData);
+
+          //get stories id
+          if(!sData.stories){ //The api can only retrun stories within 24 hours
+            console.log("No stories in 24 hours.")
+            vm.$parent.viewStories();
+          }else{
+            var S_id = sData.stories.data;
+            console.log(sData.stories.data);
+
+            if(sData.stories.data){//Make ture there's something
+              for(let i=0; i< S_id.length; i++){
+                stories_id.push(sData.stories.data[i].id);
+              }
+              vm.waitForloop(vm, stories_id)
+              .then((resolve) => {
+                console.log(resolve.message);
+                resolve.toDo();
+                
+                if(vm.isfetching === false){
+                  console.log(vm.isfetching);
+                  console.log(vm.getData)
+                  console.log(JSON.stringify(vm.getData))
+                  vm.$nextTick(()=>{
+                    vm.$emit('update', vm.getData);
+                  })
+                }
+                vm.isfetching = true;                
+              }).catch((message)=>{
+                console.log(message);
+              }
+                
+              )             
+            }                  
+          }
+      });
+
+    },
+
+    waitForloop(vm, stories_id){
+      return new Promise((resolve, reject) => {
+        if(!vm.isfetching){
+          reject('error');
+        }else{
+          resolve({
+            message: 'success',
+            toDo: function(){
+              for(let i=0; i < stories_id.length; i++){ //loop  through each id
+                window.FB.api(
+                stories_id[i],
+                'GET',
+                {"fields":"caption,media_url,timestamp", "access_token": vm.$store.state.Needed.acToken},
+                function(storyData) {
+                  console.log(vm.isfetching);
+                  console.log(storyData);
+                  console.log(storyData.id);
+                  vm.getData[i] = storyData;
+                  console.log(vm.getData[i]);
+                })
+              }
+              vm.isfetching = false;
+            }
+          })
+        }
+      })
+    },      
+
     viewPosts(){
       this.$store.state.fadeIN = false;
-      this.$parent.currentLocation = 'post';
+      this.$store.state.currentLocation = 'post';
       this.$store.state.mediaIndex = 9 //Reset images 
-      console.log(this.$parent.currentLocation)
+      console.log(this.$store.state.currentLocation)
 
       var vm = this;
       var IGid = this.$store.state.Needed.IGid;
@@ -58,26 +138,16 @@ export default {
       this.$parent.getMedias(vm, IGid, acToken);
     },
 
-    viewStroies(){
-      this.$parent.currentLocation = 'story';
-      console.log(this.$parent.currentLocation)
-      
-      var vm = this;
-      var IGid = this.$store.state.Needed.IGid;
-      var acToken = this.$store.state.Needed.acToken;      
-      this.$parent.getStories(vm, IGid, acToken);
-    },
-
     viewMentions(){
-      this.$parent.currentLocation = 'mention';
-      console.log(this.$parent.currentLocation);
+      this.$store.state.currentLocation = 'mention';
+      console.log(this.$store.state.currentLocation);
 
       var vm = this;
       var IGid = this.$store.state.Needed.IGid;
       var acToken = this.$store.state.Needed.acToken;      
       this.$parent.getTags(vm, IGid, acToken);
     }
-  }
+  },
 }
 </script>
 
@@ -86,6 +156,7 @@ export default {
 .here{
   filter: brightness(100);
   border-bottom: 1px solid white;
+  transition: filter 0.1s ease-in-out;
 }
 
 .flex{
@@ -94,7 +165,7 @@ export default {
 
 #banner{
   width: 100%;
-  height: 22vh;
+  height: 23.5vh;
   position: absolute;
   z-index: -1;
   opacity: 0.5;
@@ -117,7 +188,7 @@ export default {
   width: 150px;
   height: 150px;
   overflow: hidden;
-  margin: 0 2vw 0 0;
+  margin: 2vh 2vw 0 0;
 }
 
 .profile_pic > a > img{
@@ -184,6 +255,7 @@ ul > li{
 
 #sections > ul > li{
   margin: 0 3vw;
+  transition: filter 0.1s ease-in-out;
 }
 
 @media screen and (max-width: 1411px){
@@ -244,16 +316,11 @@ ul > li{
  .biography > h4 > a{
    font-size: 0.78rem;
  }
-
- .counts{
-   width: 90%;
-   justify-content: center;
- }
 }
 
 @media screen and (max-width: 467px) {
  #banner{
-   height: 28vh;
+   height: 24vh;
  }
 
  .profile_pic {
@@ -277,9 +344,15 @@ ul > li{
  .sections{
    margin-top: 0!important;
  }
- 
- .sections > li > button{
-   width: 20vw;
+}
+
+@media screen and (max-width: 387px) {
+ #banner{
+   height: 29.5vh;
+ }
+
+ .counts{
+   justify-content: center;   
  }
 }
 </style>

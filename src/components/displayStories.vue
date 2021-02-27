@@ -1,13 +1,22 @@
-<template style="position: relative" v-model="sts">
-<div id="noStory" v-if="Object.keys($parent.media_stories).length === 0">
+<template style="position: relative">
+<div id="noStory" v-if="!sts">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 
-<div id="hasStories" v-if="Object.keys($parent.media_stories).length > 0" @click="pauseClick" @dblclick="goBack">
+<div id="hasStories" v-else @click="pauseClick" @dblclick="goBack">
   
   <div class="showStory">
-    <center id="timeCount"></center>
-    <div class="main"><img :src="sts[storyIndex].media_url" alt="Not found"></div>
+    <div class="main">
+      <div id="sts">
+        <div id="timeCount" class="relative">
+          <div class="run" :style="{animationPlayState: playstate}"></div>
+        </div>
+        <div class="profile-sts relative">
+          <img :src="$store.state.basic.profile_pic" alt="Not found" style="border-radius: 50%">
+          {{$store.state.basic.userName}}
+        </div>
+        <img :src="sts[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
+      </div>
   </div>
   
 </div>
@@ -25,7 +34,8 @@ export default {
     return{
       timer: null,
       pause: false,
-
+      playstate: 'running',
+      sts_length: '',
       storyIndex: 0
     }
   },
@@ -36,41 +46,47 @@ export default {
     },
 
     goBack(){
-      this.$parent.currentLocation = 'post';
+      this.$store.state.currentLocation = 'post';
     },
 
     countDown(){
-      if(Object.keys(this.$parent.media_stories).length > 0){//Start counting when there are stories to show
         this.timer = window.setInterval(() => {
-                    if(this.sts.length === 1){ //If there's only one story
+                    if(this.sts_length === 1){ //If there's only one story
+                      console.log(Object.keys(this.sts).length)
                        this.goBack();
                        this.pauseClick();
-                    }else if(this.count === 15 && this.sts.length > 1){
+                    }else if(this.sts_length > 1){
                       this.checkStories();
                       this.pauseClick();
                     }
                   }, 15000);
-      }  
     },
 
     pauseClick(){
-      var timeCount = document.getElementById("timeCount");
       if(this.pause === false){ //pause timer if it is counting
         window.clearInterval(this.timer);
         this.pause = true;
-        timeCount.style.animationPlayState = 'paused';
+        this.playstate = 'paused';
         console.log("pause");
       }else if(this.pause === true){ //resume counting if it is paused
         this.pause = false;
         console.log("continue");
-        timeCount.style.animationPlayState = 'running';
+        this.playstate = 'running';
         this.countDown();
       }
     }
   },
-  created(){
+  mounted(){
+    console.log(this.sts)
+    console.log(Object.keys(this.sts).length)
+  },
+
+  beforeUpdate(){
+    this.sts_length = Object.keys(this.sts).length;
+    if(this.sts_length > 0){//Start counting when there are stories to show
       this.countDown();
-  }
+    }
+  },
 }
 </script>
 
@@ -78,7 +94,11 @@ export default {
 <style scoped>
 @keyframes countDown{
   from{ transform: translateX(0px); }
-  to{ transform: translateX(100%); }
+  to{ transform: translateX(100vw); }
+}
+
+.relative{
+  position: relative;
 }
 
 #noStory > h1{
@@ -109,7 +129,6 @@ center{
   width: 60vw;
   /* border: 1px solid red; */
   margin: 0 auto;
-  overflow: hidden;
   margin-top: 4vh;
 }
 
@@ -120,26 +139,42 @@ center{
   z-index: 2;
 }
 
-.back > button{
-  border: none;
-  background: none;
-  color: white;
-  cursor: pointer;
+#timeCount{
+  background: #232;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 0.5vh;
+  opacity: 0.7;
 }
 
-#timeCount{
-  background: white;
-  margin-top: 0.5vh;
-  color: steelblue;
+.run{
+  border: 1px solid white ;
+  background-color: white;
   animation: countDown 15s;
 }
 
 .main{
-  width: 530px;
   margin: 0 auto;
 }
 
-.main > img{
+#sts{
+  width: 514px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#sts > img{
+  max-width: 100%;
+}
+
+.profile-sts{
+  width: 20px;
+  height: 20px;
+  display: flex;
+  padding: 1%;
+}
+
+.profile-sts > img{
   max-width: 100%;
 }
 
@@ -160,12 +195,12 @@ center{
 }
 
 @media screen and (max-width: 420px) {
-  .showStory{
-    width: 95vw;
+  .main{
+    width: unset;
   }
 
-  .main{
-    width: 100%;
+  #sts{
+    width: unset;
   }
 }
 </style>
