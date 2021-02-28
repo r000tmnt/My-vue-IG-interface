@@ -1,5 +1,5 @@
 <template style="position: relative">
-<div id="noStory" v-if="sts_length === 0">
+<div id="noStory" v-if="Object.keys($store.state.media_stories).length === 0">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 

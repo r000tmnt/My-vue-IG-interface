@@ -1,15 +1,15 @@
 <template style="position: relative">
-<div id="noMention" v-if="!mentions">
+<div id="noMention" v-if="Object.keys($store.state.media_mentions).length === 0">
   <h1>有標記的相片會顯示在這裡</h1>
 </div>
 
 <div id="mentioned" v-else>
-  <div id="showMentioned" v-for="n in mentions" :key="n">
-    <img :src="n.media_url" alt="Not found" @click="larger(n)">
+  <div id="showMentioned" v-for="(mention, index) in mentions" :key="index">
+    <img :src="mention.media_url" alt="Not found" @click="larger(mention)">
 
-    <div class="large" v-if="enlarge.clicked === true">
+    <div class="large" :class="{fadeIN: fadeIN}" v-if="enlarge.clicked === true">
       <button class="close" @click="close">X</button>
-      <img class="enlarge" :class="{fadeIN: fadeIN}" :src="enlarge.source" alt="Not found">
+      <img class="enlarge" :src="enlarge.source" alt="Not found">
     </div>
   </div>
 </div>
@@ -20,12 +20,9 @@
 //Object.keys(objectname).length  Check if the object is empty
 export default {
   name: 'displayMention',
-  props: {
-    mentions: {}
-  },
-
   data(){
     return{
+      mentions: [],
       fadeIN: false,
 
       enlarge: {
@@ -36,16 +33,20 @@ export default {
   },
 
   methods: {
-    larger(n){
+    larger(mention){
       this.fadeIN = true;
       this.enlarge.clicked = true;
-      this.enlarge.source = n.media_url
+      this.enlarge.source = mention.media_url
     },
 
     close(){
       this.enlarge.clicked = false;
       this.fadeIN = false;
     }
+  },
+  mounted(){
+    this.mentions = this.$store.state.media_mentions;
+    console.log('mounted', this.mentions, this.mentions.length);    
   }
 }
 </script>

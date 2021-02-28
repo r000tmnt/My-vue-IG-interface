@@ -6,7 +6,7 @@
 
       <div class="forFlex flex">
         <div id="view">
-          <img id="pic" :src="media.url" alt="not found">
+          <img id="pic" :src="media.media_url" alt="not found">
         </div>
 
         <div id="info">
@@ -16,9 +16,9 @@
             </div>
 
             <div class="subInfo flex">
-              <div class="likes">{{media.likes}}個讚</div>
+              <div class="likes">{{media.like_count}}個讚</div>
               &nbsp;&nbsp;
-              <div class="comments_count">{{media.comments}}個留言</div>
+              <div class="comments_count">{{media.comments_count}}個留言</div>
             </div>
 
             <div class="caption text-align">
@@ -33,7 +33,7 @@
                 </button>
               </div>
 
-              <div id="noComment text-align" v-if="$parent.theMediaComment.length === 0">
+              <div id="noComment text-align" v-if="$store.state.theMediaComment.length === 0">
                 尚無留言，搶個頭香吧。
               </div>
 
@@ -54,10 +54,6 @@
         </div>
       </div>
   </div>
-
-   
-
-  
 </div>
  
 </template>
@@ -67,12 +63,16 @@ export default {
   name: 'viewPics',
   props: {
     media: {},
-    mediaComment: {}
   },
   
   data(){
     return{
-      autoResize: 20
+      MediaComment: [],
+      autoResize: 20,
+      handler: {
+      isViewing: false,
+      addClass: true,
+      }
     }
   },
 
@@ -126,11 +126,17 @@ export default {
     },
 
     closeModal(){
-      this.$parent.isViewing = false;
-      this.$parent.theMediaComment.splice(0, this.$parent.theMediaComment.length); //clear props
-      this.$parent.addClass = true;
-      this.$parent.defineScrollbar();
+      //Remember to clear comments 
+      this.$emit('close', this.handler);
     }
+  },
+  mounted(){
+    this.MediaComment = this.$store.state.theMediaComment;
+    console.log('mounted', this.MediaComment);
+  },
+  beforeUpdate(){
+    this.MediaComment = this.$store.state.theMediaComment;
+    console.log('beforeUpdate', this.MediaComment);    
   }
 }
 </script>

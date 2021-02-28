@@ -7,7 +7,7 @@
       <button @click="getLogin">登入FB</button>
     </div>
     <div style="clear: both"></div>
-  <basicInfo @toMention="updateMentions($event)"></basicInfo>
+  <basicInfo></basicInfo>
   <display-medias v-if="$store.state.currentLocation === 'post'" :urls="media_urls"></display-medias>
   <displayStories v-if="$store.state.currentLocation === 'story'"></displayStories>
   <displayMention v-if="$store.state.currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
@@ -30,13 +30,6 @@ export default {
   },
   data(){
     return{
-        media_urls: {
-          // id: "", url: "", caption: "", commonts: "", time: ""
-        },
-
-        media_mentions:[
-          {id: '',caption: '',  media_url: '', timestamp: ''}
-        ],
         modal_open: false,
     }
   },
@@ -88,33 +81,6 @@ export default {
       });
     },
 
-    updateStories(val){
-      this.media_stories = val;
-      console.log(val);
-      if(this.media_stories === val){
-        console.log(this.media_stories);
-        this.$nextTick(()=>{
-          this.viewStories();
-        })
-      }
-    },
-
-    updateMentions(val){
-      this.media_mentions = val;
-      console.log(val);
-      if(this.media_mentions === val){
-        console.log(this.media_mentions);
-        this.$nextTick(()=>{
-          this.viewMentions();
-        })
-      }
-    },
-
-    viewMentions(){
-      this.$store.state.currentLocation = 'mention';
-      console.log(this.$store.state.currentLocation)
-    },
-
     getMedias(vm, IGid, acToken){
       window.FB.api(
         IGid+"/media",
@@ -125,15 +91,9 @@ export default {
           var pics = new Array();
               
           for(let i=0; i < src.data.length; i++){
-            pics.push(
-              {id: src.data[i].id,
-                likes: src.data[i].like_count, 
-                url: src.data[i].media_url,
-                caption: src.data[i].caption,
-                comments: src.data[i].comments_count,
-                time: src.data[i].timestamp});
+            pics.push(src.data[i]);
           }
-            vm.media_urls = pics;
+            vm.$store.commit('toPosts', pics);
         });
     },
 
@@ -175,21 +135,9 @@ export default {
             sortComment.push(oneComment[i]);
           }
           console.log(sortComment);
-          
-          for(let i=0; i < sortComment.length; i++){
-            var timeCode = sortComment[i].timestamp;
-            sortComment[i].timestamp = vm.convetTime(timeCode);
-          }
-
           vm.$store.commit('toComment', sortComment);
         }
       )
-    },
-
-    convetTime(timeCode){ //Convert to human readable time
-      var theTime = new Date(timeCode).getTime();
-      var whatTime = new Date(theTime).toDateString();
-      return whatTime;
     },
 
     scroll(){

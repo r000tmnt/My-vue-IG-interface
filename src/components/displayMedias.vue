@@ -1,13 +1,13 @@
-<template v-model="urls">
+<template v-model="$store.state.media_posts">
 <div class="frame">
-  <div id="photos" v-if="urls.length > 0">
+  <div id="photos" v-if="Object.keys($store.state.media_posts).length > 0">
       <div class="medias" v-for="n in $store.state.mediaIndex" :class="{fadeIN: $store.state.fadeIN}" :key="n" :style="{ 
-        'background-image': 'url(' + urls[n-1].url + ')', 
+        'background-image': 'url(' + Posts[n-1].media_url + ')', 
         'background-size': 'cover',
         'background-position':'center'}" @click="viewing(n)">
         </div>
 
-        <viewPics v-if="isViewing === true" :media="clickedMedia" :mediaComment="theMediaComment"></viewPics>
+        <viewPics v-if="isViewing === true" :media="clickedMedia" @close="closeModal($event)"></viewPics>
   </div>
 </div>
 
@@ -17,43 +17,55 @@
 </template>
 
 <script>
-import viewPics from './viewPics.vue'
+import { defineAsyncComponent } from 'vue'
+
+const viewPics = defineAsyncComponent(()=> import('./viewPics.vue'))
 
 export default {
   name: 'displayMedias',
-  props: {
-      urls: []
-  },
   components: {
     viewPics 
   },
   data(){
       return{
         isViewing: false,
+        Posts: [],
         clickedMedia: {},
-        theMediaComment: [],
-        addClass: false,
-        className: 'modal_open'
       }
   },
   methods:{
       viewing(n){
-      this.isViewing = true;
-      this.$parent.modal_open = true;
-      this.clickedMedia = this.urls[n-1] //Push the info of the photo  
-      var Clength = this.$store.state.media_comments.length;
+        this.getComments().then((resolve) => {
+          console.log(resolve.message);
+          resolve.toDo();
+          if(this.isViewing === true){          
+            this.$parent.modal_open = true;
+            this.clickedMedia = this.Posts[n-1] //Push the info of the photo  
+            this.$store.commit('sortComments', this.clickedMedia);
+          }
+        }).catch((reject) => {
+          console.log(reject)
+        })                  
+        this.$store.state.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+        this.addClass = false;
+        this.$store.commit('defineScrollbar');
+    },
 
-      for(let i=0; i < Clength; i++){
-        if(this.urls[n-1].id === this.$store.state.media_comments[i].media.id){ //Check if both id matches      
-
-          this.theMediaComment.push(this.$store.state.media_comments[i]) //Push the info of the comment
+    getComments(){
+      var vm = this;
+      return new Promise((resolve, reject) => {
+        if(vm.isViewing === true){
+          reject('error')
+        }else{
+          resolve({
+            message: 'Make an api call',
+            toDo: function(){
+              vm.$store.dispatch('getComments');
+              vm.isViewing = true;
+            }
+          })
         }
-      }
-
-      console.log(this.urls[n-1].id, this.theMediaComment)                    
-      this.$store.state.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-      this.addClass = false;
-      this.defineScrollbar();
+      })
     },
 
     showMore(){
@@ -65,15 +77,16 @@ export default {
       })
     },
 
-    defineScrollbar(){
-      const body = document.body;
-
-      if(this.addClass === false){
-        body.classList.add(this.className);
-      }else{
-        body.classList.remove(this.className)
-      }
+    closeModal(val){
+      console.log(val)
+      this.isViewing = val.isViewing;
+      this.addClass = val.addClass;
+      this.$store.commit('defineScrollbar');
     }
+  },
+  beforeUpdate(){
+    this.Posts =  this.$store.state.media_posts;
+    console.log(this.Posts);
   }
 }
 </script>

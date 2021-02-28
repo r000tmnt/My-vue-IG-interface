@@ -141,7 +141,7 @@ export default {
             vm.getData = mentions;
             console.log(vm.getData)
             vm.$nextTick(()=>{
-              vm.$emit('toMention', vm.getData);
+              vm.$store.dispatch('toMentions', vm.getData);
             })
           }else{
             console.log('error');
