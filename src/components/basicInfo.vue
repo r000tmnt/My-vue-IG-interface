@@ -9,7 +9,7 @@
   <div id="fromData">
       <div id="profile" class="flex">
         <div class="profile_pic">
-          <a class="section story" :class="{Here: $parent.currentLocation === 'story'}" @click="getStories()">
+          <a class="section story" :class="{Here: $store.state.currentLocation === 'story'}" @click="getStories()">
             <img :src="$store.state.basic.profile_pic" alt="Not Found">
           </a>
         </div>
@@ -30,11 +30,11 @@
 
   <div id="sections">
     <ul class="flex">
-      <li class="section post" :class="{here: $parent.currentLocation === 'post'}">
+      <li class="section post" :class="{here: $store.state.currentLocation === 'post'}">
         <img src="../assets/image.svg" alt="Not found" @click="viewPosts()">
       </li>
-      <li class="section mention" :class="{here: $parent.currentLocation === 'mention'}">
-        <img src="../assets/pin.svg" alt="Not found" @click="viewMentions()">
+      <li class="section mention" :class="{here: $store.state.currentLocation === 'mention'}">
+        <img src="../assets/pin.svg" alt="Not found" @click="getTags()">
       </li>
     </ul>
   </div>
@@ -48,7 +48,7 @@ export default {
   data(){
     return{
       isfetching: true,
-      getData: {}
+      getData: {} //a place for new datas before send to parent
     }
   },
   methods: {
@@ -83,7 +83,7 @@ export default {
                   console.log(vm.getData)
                   console.log(JSON.stringify(vm.getData))
                   vm.$nextTick(()=>{
-                    vm.$emit('update', vm.getData);
+                    vm.$emit('toStory', vm.getData);
                   })
                 }
                 vm.isfetching = true;                
@@ -124,7 +124,34 @@ export default {
           })
         }
       })
-    },      
+    },
+    
+    getTags(){
+      var vm = this;
+      var mentions = [];
+      window.FB.api(
+        vm.$store.state.Needed.IGid+'/tags',
+        'GET',
+        {"fields":"id,username,media_url", "access_token": vm.$store.state.Needed.acToken},
+        function(tagged){
+          console.log(tagged.data);
+          for(let i=0; i < tagged.data.length; i++){
+            mentions.push(tagged.data[i]);
+          }
+
+          console.log(mentions);
+          if(mentions.length > 0){
+            vm.getData = mentions;
+            console.log(vm.getData)
+            vm.$nextTick(()=>{
+              vm.$emit('toMention', vm.getData);
+            })
+          }else{
+            console.log('error');
+          }          
+        }
+      )
+    },
 
     viewPosts(){
       this.$store.state.fadeIN = false;
@@ -138,25 +165,25 @@ export default {
       this.$parent.getMedias(vm, IGid, acToken);
     },
 
-    viewMentions(){
-      this.$store.state.currentLocation = 'mention';
-      console.log(this.$store.state.currentLocation);
-
-      var vm = this;
-      var IGid = this.$store.state.Needed.IGid;
-      var acToken = this.$store.state.Needed.acToken;      
-      this.$parent.getTags(vm, IGid, acToken);
-    }
+    
   },
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+@keyframes isHere{
+  from{
+    filter: invert(1) brightness(0.5);
+  }
+  to{
+    filter: brightness(100);
+    border-bottom: 1px solid white;
+  }
+}
+
 .here{
-  filter: brightness(100);
-  border-bottom: 1px solid white;
-  transition: filter 0.1s ease-in-out;
+  animation: isHere 0.5s ease-in-out forwards;
 }
 
 .flex{
@@ -255,7 +282,6 @@ ul > li{
 
 #sections > ul > li{
   margin: 0 3vw;
-  transition: filter 0.1s ease-in-out;
 }
 
 @media screen and (max-width: 1411px){

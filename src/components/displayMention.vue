@@ -1,11 +1,11 @@
 <template style="position: relative">
-<div id="noMention" v-if="Object.keys($parent.media_mentions).length === 0">
+<div id="noMention" v-if="!mentions">
   <h1>有標記的相片會顯示在這裡</h1>
 </div>
 
 <div id="mentioned" v-else>
   <div id="showMentioned" v-for="n in mentions" :key="n">
-    <img :src="n.url" alt="Not found" @click="larger(n)">
+    <img :src="n.media_url" alt="Not found" @click="larger(n)">
 
     <div class="large" v-if="enlarge.clicked === true">
       <button class="close" @click="close">X</button>
@@ -39,7 +39,7 @@ export default {
     larger(n){
       this.fadeIN = true;
       this.enlarge.clicked = true;
-      this.enlarge.source = n.url
+      this.enlarge.source = n.media_url
     },
 
     close(){

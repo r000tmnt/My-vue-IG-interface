@@ -7,7 +7,7 @@
       <button @click="getLogin">登入FB</button>
     </div>
     <div style="clear: both"></div>
-  <basicInfo @update="updateStories($event)"></basicInfo>
+  <basicInfo @toStory="updateStories($event)" @toMention="updateMentions($event)"></basicInfo>
   <display-medias v-if="$store.state.currentLocation === 'post'" :urls="media_urls"></display-medias>
   <displayStories v-if="$store.state.currentLocation === 'story'" :sts="media_stories" v-model="media_stories"></displayStories>
   <displayMention v-if="$store.state.currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
@@ -19,9 +19,9 @@
 import { defineAsyncComponent } from 'vue'
 import basicInfo from './components/basicInfo.vue'
 import displayMedias from './components/displayMedias.vue'
-import displayMention from './components/displayMention.vue'
 
 const displayStories = defineAsyncComponent(()=> import('./components/displayStories.vue'))
+const displayMention = defineAsyncComponent(()=> import('./components/displayMention.vue'))
 
 export default {
   name: 'App',
@@ -38,7 +38,9 @@ export default {
           {id: '',caption: '',  media_url: '', timestamp: ''}
         ],
 
-        media_mentions:{},
+        media_mentions:[
+          {id: '',caption: '',  media_url: '', timestamp: ''}
+        ],
         modal_open: false,
     }
   },
@@ -75,7 +77,7 @@ export default {
           vm.$store.state.Needed.IGid = IGid;
           vm.getBasic(vm, IGid, acToken);
           vm.getMedias(vm, IGid, acToken);
-          vm.getTags(vm, IGid, acToken);          
+          // vm.getTags(vm, IGid, acToken);          
           vm.getComments(vm, IGid, acToken);
           });
     },
@@ -107,23 +109,20 @@ export default {
       console.log(this.$store.state.currentLocation) 
     },
 
-    getTags(vm, IGid, acToken){
-      var mentioned = new Array();
-      window.FB.api(
-        IGid+'/tags',
-        'GET',
-        {"fields":"id,username,media_url", "access_token": acToken},
-        function(tagged){
-          console.log(tagged.data);
-          for(let i=0; i < tagged.data.length; i++){
-            mentioned.push({id: tagged.data[i].id,
-                            username: tagged.data[i].username,
-                            url: tagged.data[i].media_url});
-          }
-        }
-      )
-      vm.media_mentions = mentioned;
-      console.log(mentioned)
+    updateMentions(val){
+      this.media_mentions = val;
+      console.log(val);
+      if(this.media_mentions === val){
+        console.log(this.media_mentions);
+        this.$nextTick(()=>{
+          this.viewMentions();
+        })
+      }
+    },
+
+    viewMentions(){
+      this.$store.state.currentLocation = 'mention';
+      console.log(this.$store.state.currentLocation)
     },
 
     getMedias(vm, IGid, acToken){

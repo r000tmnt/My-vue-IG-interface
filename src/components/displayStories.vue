@@ -34,6 +34,7 @@ export default {
     return{
       timer: null,
       pause: false,
+      childWidth: '',
       playstate: 'running',
       sts_length: '',
       storyIndex: 0
@@ -51,11 +52,11 @@ export default {
 
     countDown(){
         this.timer = window.setInterval(() => {
-                    if(this.sts_length === 1){ //If there's only one story
+                    if(this.sts_length === 1 && this.pause === false){ //If there's only one story
                       console.log(Object.keys(this.sts).length)
                        this.goBack();
                        this.pauseClick();
-                    }else if(this.sts_length > 1){
+                    }else if(this.sts_length > 1 && this.pause === false){
                       this.checkStories();
                       this.pauseClick();
                     }
@@ -93,8 +94,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @keyframes countDown{
-  from{ transform: translateX(0px); }
-  to{ transform: translateX(100vw); }
+  from{ transform: translateX(0%); }
+  to{ transform: translateX(100%); }
 }
 
 .relative{
@@ -140,6 +141,7 @@ center{
 }
 
 #timeCount{
+  width: 100%;
   background: #232;
   border-radius: 15px;
   overflow: hidden;
