@@ -1,5 +1,5 @@
 <template style="position: relative">
-<div id="noStory" v-if="!sts">
+<div id="noStory" v-if="sts_length === 0">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 
@@ -15,7 +15,7 @@
           <img :src="$store.state.basic.profile_pic" alt="Not found" style="border-radius: 50%">
           {{$store.state.basic.userName}}
         </div>
-        <img :src="sts[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
+        <img :src="$store.state.media_stories[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
       </div>
   </div>
   
@@ -27,16 +27,12 @@
 //Object.keys(objectname).length  Check if the object is empty
 export default {
   name: 'displayStories',
-  props: {
-    sts: {}
-  },
   data(){
     return{
       timer: null,
       pause: false,
-      childWidth: '',
       playstate: 'running',
-      sts_length: '',
+      sts_length: '', //vue will access the defalut value first, so set it to empty. Set to 0 will result as nothing to show
       storyIndex: 0
     }
   },
@@ -53,7 +49,7 @@ export default {
     countDown(){
         this.timer = window.setInterval(() => {
                     if(this.sts_length === 1 && this.pause === false){ //If there's only one story
-                      console.log(Object.keys(this.sts).length)
+                       console.log(this.sts_length)
                        this.goBack();
                        this.pauseClick();
                     }else if(this.sts_length > 1 && this.pause === false){
@@ -77,17 +73,14 @@ export default {
       }
     }
   },
-  mounted(){
-    console.log(this.sts)
-    console.log(Object.keys(this.sts).length)
-  },
-
   beforeUpdate(){
-    this.sts_length = Object.keys(this.sts).length;
+    this.sts_length = Object.keys(this.$store.state.media_stories).length;
+    console.log(this.sts_length)
+    console.log('beforeUpdate',Object.keys(this.$store.state.media_stories).length);
     if(this.sts_length > 0){//Start counting when there are stories to show
       this.countDown();
-    }
-  },
+    }    
+  } 
 }
 </script>
 

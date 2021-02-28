@@ -31,7 +31,7 @@
   <div id="sections">
     <ul class="flex">
       <li class="section post" :class="{here: $store.state.currentLocation === 'post'}">
-        <img src="../assets/image.svg" alt="Not found" @click="viewPosts()">
+        <img src="../assets/image.svg" alt="Not found" @click="refreash_Posts()">
       </li>
       <li class="section mention" :class="{here: $store.state.currentLocation === 'mention'}">
         <img src="../assets/pin.svg" alt="Not found" @click="getTags()">
@@ -64,7 +64,7 @@ export default {
           //get stories id
           if(!sData.stories){ //The api can only retrun stories within 24 hours
             console.log("No stories in 24 hours.")
-            vm.$parent.viewStories();
+            vm.$store.commit('viewStories');
           }else{
             var S_id = sData.stories.data;
             console.log(sData.stories.data);
@@ -80,10 +80,8 @@ export default {
                 
                 if(vm.isfetching === false){
                   console.log(vm.isfetching);
-                  console.log(vm.getData)
-                  console.log(JSON.stringify(vm.getData))
                   vm.$nextTick(()=>{
-                    vm.$emit('toStory', vm.getData);
+                    vm.$store.dispatch('toStories', vm.getData);
                   })
                 }
                 vm.isfetching = true;                
@@ -114,7 +112,6 @@ export default {
                 function(storyData) {
                   console.log(vm.isfetching);
                   console.log(storyData);
-                  console.log(storyData.id);
                   vm.getData[i] = storyData;
                   console.log(vm.getData[i]);
                 })
@@ -153,16 +150,41 @@ export default {
       )
     },
 
-    viewPosts(){
-      this.$store.state.fadeIN = false;
-      this.$store.state.currentLocation = 'post';
-      this.$store.state.mediaIndex = 9 //Reset images 
-      console.log(this.$store.state.currentLocation)
-
+    waitForRefreash(){
       var vm = this;
-      var IGid = this.$store.state.Needed.IGid;
-      var acToken = this.$store.state.Needed.acToken;
-      this.$parent.getMedias(vm, IGid, acToken);
+      var IGid = vm.$store.state.Needed.IGid;
+      var acToken = vm.$store.state.Needed.acToken;      
+      return new Promise((resolve, reject) => {
+        if(!this.isfetching){
+          reject('error')
+        }else{
+          resolve({
+            message: 'sucess',
+            toDo: function(){
+              vm.$parent.getMedias(vm, IGid, acToken); 
+              vm.isfetching = false;
+            }
+          })
+        }
+      })      
+    },
+
+    refreash_Posts(){
+      this.waitForRefreash().then((resolve) => {
+        console.log(resolve.message);
+        resolve.toDo();
+        if(this.isfetching === false){//Wait till api call to finish
+          this.$store.state.fadeIN = false;
+          this.$store.state.currentLocation = 'post';
+          this.$store.state.mediaIndex = 9 //Reset images 
+          console.log(this.$store.state.currentLocation)          
+        }
+        this.isfetching = true;
+      }).catch((reject) => {
+        console.log(reject)
+      })
+     
+
     },
 
     

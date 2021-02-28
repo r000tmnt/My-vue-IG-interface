@@ -7,9 +7,9 @@
       <button @click="getLogin">登入FB</button>
     </div>
     <div style="clear: both"></div>
-  <basicInfo @toStory="updateStories($event)" @toMention="updateMentions($event)"></basicInfo>
+  <basicInfo @toMention="updateMentions($event)"></basicInfo>
   <display-medias v-if="$store.state.currentLocation === 'post'" :urls="media_urls"></display-medias>
-  <displayStories v-if="$store.state.currentLocation === 'story'" :sts="media_stories" v-model="media_stories"></displayStories>
+  <displayStories v-if="$store.state.currentLocation === 'story'"></displayStories>
   <displayMention v-if="$store.state.currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
   <footer class="bg_color">&copy; 2021 ParkCorner</footer>
@@ -33,10 +33,6 @@ export default {
         media_urls: {
           // id: "", url: "", caption: "", commonts: "", time: ""
         },
-        
-        media_stories: [
-          {id: '',caption: '',  media_url: '', timestamp: ''}
-        ],
 
         media_mentions:[
           {id: '',caption: '',  media_url: '', timestamp: ''}
@@ -76,8 +72,7 @@ export default {
           var IGid = IGdata.instagram_business_account.id;
           vm.$store.state.Needed.IGid = IGid;
           vm.getBasic(vm, IGid, acToken);
-          vm.getMedias(vm, IGid, acToken);
-          // vm.getTags(vm, IGid, acToken);          
+          vm.getMedias(vm, IGid, acToken);        
           vm.getComments(vm, IGid, acToken);
           });
     },
@@ -102,11 +97,6 @@ export default {
           this.viewStories();
         })
       }
-    },
-
-    viewStories(){
-      this.$store.state.currentLocation = 'story';
-      console.log(this.$store.state.currentLocation) 
     },
 
     updateMentions(val){

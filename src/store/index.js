@@ -18,6 +18,10 @@ export default createStore({
       userName: "", 
       web: ""},
 
+      isProcessing: true,
+
+      media_stories: [],
+
       media_comments: {
         // id: "", text: "", time: "", userName: "",
       },
@@ -31,6 +35,7 @@ export default createStore({
       scrollY: ''
       
   },
+
   mutations: {
     toBasic(state, basicData){
         state.basic.bio = basicData.biography;
@@ -41,6 +46,16 @@ export default createStore({
         state.basic.profile_pic = basicData.profile_picture_url;
         state.basic.userName = basicData.username;
         state.basic.web = basicData.website;
+    },
+
+    toStories(state, data){
+      state.media_stories = data;
+      console.log(state.media_stories)
+    },    
+
+    viewStories(state){
+      state.currentLocation = 'story';
+      console.log(state.currentLocation) 
     },
 
     showMore(state){
@@ -56,8 +71,40 @@ export default createStore({
       state.media_comments = sortComment;
     }
   },
+
   actions: {
+    toStories(context, data){
+      context.dispatch('processStories', data).then((resolve) => {
+        console.log(resolve.message);
+        resolve.toDo();
+        if(context.state.media_stories){
+          console.log('stories length: ',Object.keys(context.state.media_stories).length)
+          context.commit('viewStories');
+          context.state.isProcessing = true;
+        }        
+      }).catch((reject) => {
+        console.log(reject);
+      })
+    },
+
+    processStories(context, data){
+      return new Promise((resolve, reject) => {
+        if(!context.state.isProcessing){
+          reject('error');
+        }else{
+          resolve({
+            message: 'Proceeding to mutation',
+            toDo: function(){
+              context.commit('toStories', data);
+              console.log('stories length: ',Object.keys(context.state.media_stories).length);
+              context.state.isProcessing = false;
+            }
+          })
+        }
+      });
+    }
   },
+  
   modules: {
   }
 })
