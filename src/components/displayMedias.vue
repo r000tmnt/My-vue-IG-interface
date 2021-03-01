@@ -2,7 +2,7 @@
 <div class="frame">
   <div id="photos" v-if="Object.keys($store.state.media_posts).length > 0">
       <div class="medias" v-for="n in $store.state.mediaIndex" :class="{fadeIN: $store.state.fadeIN}" :key="n" :style="{ 
-        'background-image': 'url(' + Posts[n-1].media_url + ')', 
+        'background-image': 'url(' + $store.state.media_posts[n-1].media_url + ')', 
         'background-size': 'cover',
         'background-position':'center'}" @click="viewing(n)">
         </div>
@@ -29,29 +29,30 @@ export default {
   data(){
       return{
         isViewing: false,
-        Posts: [],
+        addClass: false,
+        className: 'modal_open',        
         clickedMedia: {},
       }
   },
   methods:{
       viewing(n){
-        this.getComments().then((resolve) => {
+        this.clickedMedia = this.$store.state.media_posts[n-1] //Push the info of the photo  
+        console.log(this.clickedMedia);           
+        this.getComments(this.clickedMedia).then((resolve) => {
           console.log(resolve.message);
-          resolve.toDo();
+          resolve.toDo();       
           if(this.isViewing === true){          
             this.$parent.modal_open = true;
-            this.clickedMedia = this.Posts[n-1] //Push the info of the photo  
-            this.$store.commit('sortComments', this.clickedMedia);
+            this.$store.state.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+            this.addClass = false;
+            this.defineScrollbar();            
           }
         }).catch((reject) => {
           console.log(reject)
         })                  
-        this.$store.state.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
-        this.addClass = false;
-        this.$store.commit('defineScrollbar');
     },
 
-    getComments(){
+    getComments(clickedMedia){
       var vm = this;
       return new Promise((resolve, reject) => {
         if(vm.isViewing === true){
@@ -60,7 +61,7 @@ export default {
           resolve({
             message: 'Make an api call',
             toDo: function(){
-              vm.$store.dispatch('getComments');
+              vm.$store.dispatch('searchComments', clickedMedia);
               vm.isViewing = true;
             }
           })
@@ -81,12 +82,21 @@ export default {
       console.log(val)
       this.isViewing = val.isViewing;
       this.addClass = val.addClass;
-      this.$store.commit('defineScrollbar');
-    }
+      this.defineScrollbar();
+    },
+
+    defineScrollbar(){
+      const body = document.body;
+
+      if(this.addClass === false){
+        body.classList.add(this.className);
+      }else{
+        body.classList.remove(this.className)
+      }
+    }  
   },
   beforeUpdate(){
-    this.Posts =  this.$store.state.media_posts;
-    console.log(this.Posts);
+    console.log(this.$store.state.media_posts);
   }
 }
 </script>

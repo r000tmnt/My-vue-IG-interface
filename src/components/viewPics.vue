@@ -1,7 +1,7 @@
 <template style="position: relative" v-model="mediaComment">
 <div class="modal" :style="{'margin-top' : $store.state.scrollY}">
   <div id="forCenter">
-    <button class="close" @click="closeModal">X</button>
+    <button class="close" @click="closeModal()">X</button>
     <div style="clear: both"></div>
 
       <div class="forFlex flex">
@@ -27,9 +27,9 @@
 
             <div class="comments text-align">
               <div class="input">
-                <textarea id="pushNew" placeholder="留言" :style="{'height' : autoResize + 'px'}" @keyup.enter="textAreaResize()"></textarea>
+                <textarea id="pushNew" placeholder="留言" :style="{'height' : autoResize + 'px'}" v-model="newComment" @keyup.enter="textAreaResize()"></textarea>
                 <button class="push">
-                  <img src="../assets/sent.png" alt="Not found" @click="pushComment">
+                  <img src="../assets/sent.png" alt="Not found" @click="pushComment(media)">
                 </button>
               </div>
 
@@ -40,11 +40,11 @@
               <div class="comment_list" v-else>
 
                 <section>
-                  <div class="vistor" v-for="(n, index) in mediaComment" :key="n.id">
+                  <div class="vistor" v-for="(comment, index) in $store.state.theMediaComment" :key="comment.id">
                     <div class="comment">
-                      <button class="del" @click="deleteComment(n, index)">X</button>
-                      <h4>{{n.username}}: {{n.text}}</h4>
-                      <small>{{n.timestamp}}</small>
+                      <button class="del" @click="deleteComment(comment, index)">X</button>
+                      <h4>{{comment.username}}: {{comment.text}}</h4>
+                      <small>{{comment.timestamp}}</small>
                     </div>
                   </div>
                 </section>
@@ -68,6 +68,7 @@ export default {
   data(){
     return{
       MediaComment: [],
+      newComment: '',
       autoResize: 20,
       handler: {
       isViewing: false,
@@ -85,41 +86,18 @@ export default {
       }
     },
     
-    pushComment(){
-      var newComment = document.getElementById('pushNew');
-      var vm = this;
-      var current = new Date();
-      var theDay = current.toDateString();
-
-      if(newComment.value !== ''){
-        window.FB.api(
-          vm.media.id+'/comments',
-          'POST',
-          {"message": newComment.value},
-          function(response){
-            vm.$parent.theMediaComment.unshift({id: response.id,
-                                                userName: vm.$store.state.basic.userName,
-                                                text: newComment.value,
-                                                time: theDay})
-            console.log(response);
-            newComment.value = ''; //Clear input
-          }
-        )
+    pushComment(media){
+      var Needed = {id: media.id, message: this.newComment}
+      if(this.newComment !== ''){ //Make sure there's something to push
+        this.$store.commit('pushComment', Needed);
+        this.newComment = ''; //Clear 
       }
     },
 
-    deleteComment(n, index){
-      let ask = confirm('您希望刪除 '+n.text+' 這個留言嗎?')
-      var vm = this;
+    deleteComment(comment, index){
+      let ask = confirm('您希望刪除 '+comment.text+' 這個留言嗎?')
       if(ask){
-          window.FB.api(
-          n.id,
-          'DELETE',
-          function(responseDEL){
-            console.log(responseDEL);
-            vm.$parent.theMediaComment.splice(index, 1);
-          }
-        )
+        this.$store.commit('deleteComment', comment, index)
       }else{
           console.log("好險沒刪掉...")
         }
@@ -127,16 +105,30 @@ export default {
 
     closeModal(){
       //Remember to clear comments 
+      this.$store.commit('clearComment')
       this.$emit('close', this.handler);
     }
   },
-  mounted(){
+  beforeMount(){
     this.MediaComment = this.$store.state.theMediaComment;
-    console.log('mounted', this.MediaComment);
+    console.log('beforeMount', this.MediaComment);
   },
-  beforeUpdate(){
-    this.MediaComment = this.$store.state.theMediaComment;
-    console.log('beforeUpdate', this.MediaComment);    
+  updated(){
+    console.log('updated', 'Make sure pushes are done', 'thecomments length: ', this.MediaComment.length)
+    if(this.MediaComment.length > 0){
+      for(let i=0; i < this.MediaComment.length; i++){
+        var timeCode = { stamp: this.MediaComment[i].timestamp, index: i,};
+        //promise chained from vuex action
+         this.$store.dispatch('convertTime',timeCode).then((resolve) => {
+          console.log(resolve.message);
+          resolve.convert();
+        }).catch((reject) => {
+          console.log(reject);
+        })
+      }          
+    }else{
+      console.log('condition not match');
+    }      
   }
 }
 </script>

@@ -66,8 +66,7 @@ export default {
           vm.$store.state.Needed.IGid = IGid;
           vm.getBasic(vm, IGid, acToken);
           vm.getMedias(vm, IGid, acToken);        
-          vm.getComments(vm, IGid, acToken);
-          });
+        });
     },
 
     getBasic(vm, IGid, acToken){
@@ -95,49 +94,6 @@ export default {
           }
             vm.$store.commit('toPosts', pics);
         });
-    },
-
-    getComments(vm, IGid, acToken){
-      var cArray = new Array();
-      var sortComment = new Array();
-      var multiComment = new Array();
-      var oneComment = new Array();
-      window.FB.api(
-        IGid+'/media',
-        {"fields":"comments{id,username,media,text,timestamp,replies}",  "access_token": acToken},
-        function(cData){
-          console.log(cData);
-
-          for(let i=0; i < cData.data.length; i++){
-            if(cData.data[i].comments){
-              cArray.push(cData.data[i].comments);
-            }
-          }
-          console.log(cArray)
-
-          for(let i=0; i < cArray.length; i++){//filter out the media with multiple comments
-              if(cArray[i].data.length > 1){
-                multiComment.push(cArray[i].data);
-                console.log(multiComment)
-              }else{
-                oneComment.push(cArray[i].data[i-i]);
-                console.log(oneComment)
-              }
-          }
-
-          for(let i=0; i < multiComment.length; i++){ //loop into each array
-            for(let j=0; j < multiComment[i].length; j++){
-              sortComment.push(multiComment[i][j]);
-            }
-          }
-          
-          for(let i=0; i < oneComment.length; i++){
-            sortComment.push(oneComment[i]);
-          }
-          console.log(sortComment);
-          vm.$store.commit('toComment', sortComment);
-        }
-      )
     },
 
     scroll(){

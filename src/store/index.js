@@ -17,9 +17,6 @@ export default createStore({
       userName: "", 
       web: ""},
 
-      addClass: false,
-      className: 'modal_open',
-
       isProcessing: true,
 
       media_posts: [],
@@ -28,7 +25,6 @@ export default createStore({
 
       media_mentions: [],     
 
-      media_comments: [],
       theMediaComment: [],//the comment of the post you clicked 
 
       currentLocation: 'post',
@@ -68,72 +64,6 @@ export default createStore({
       console.log(state.media_mentions)
     },
 
-    toComment(state, data){
-      state.media_comments = data;
-      console.log(state.media_comments)      
-    },
-
-    // getComments(state){
-    //   var vm = this;
-    //   var cArray = new Array();
-    //   var sortComment = new Array();
-    //   var multiComment = new Array();
-    //   var oneComment = new Array();      
-    //   window.FB.api(
-    //     state.Needed.IGid+'/media',
-    //     {"fields":"comments{id,username,media,text,timestamp,replies}",  "access_token": state.Needed.acToken},
-    //     function(cData){
-    //       console.log(cData);
-
-    //       for(let i=0; i < cData.data.length; i++){
-    //         if(cData.data[i].comments){
-    //           cArray.push(cData.data[i].comments);
-    //         }
-    //       }
-    //       console.log(cArray)
-
-    //       for(let i=0; i < cArray.length; i++){//filter out the media with multiple comments
-    //           if(cArray[i].data.length > 1){
-    //             multiComment.push(cArray[i].data);
-    //             console.log(multiComment)
-    //           }else{
-    //             oneComment.push(cArray[i].data[i-i]);
-    //             console.log(oneComment)
-    //           }
-    //       }
-
-    //       for(let i=0; i < multiComment.length; i++){ //loop into each array
-    //         for(let j=0; j < multiComment[i].length; j++){
-    //           sortComment.push(multiComment[i][j]);
-    //         }
-    //       }
-          
-    //       for(let i=0; i < oneComment.length; i++){
-    //         sortComment.push(oneComment[i]);
-    //       }
-    //       console.log(sortComment);
-    //       vm.state.media_comments = sortComment;
-    //     }
-    //   )       
-    // },
-
-    convertTime(timeCode){ //Convert to human readable time
-      var theTime = new Date(timeCode).getTime();
-      var whatTime = new Date(theTime).toDateString();
-      return whatTime;
-    },
-
-    sortComments(state, data){ //Use for pin-point the comment
-      var Clength = state.media_comments.length;
-
-      for(let i=0; i < Clength; i++){
-        if(data.id === state.media_comments[i].media.id){ //Check if both id matches      
-
-          this.theMediaComment.push(state.media_comments[i]) //Push the info of the comment
-        }
-      }      
-    },
-
     viewStories(state){
       state.currentLocation = 'story';
       console.log(state.currentLocation) 
@@ -153,15 +83,63 @@ export default createStore({
       state.fadeIN = true;
     },
 
-    defineScrollbar(state){
-      const body = document.body;
+    searchComments(state, data){ //Use for pin-point the comment
+      window.FB.api(
+        data.id,//Use the id of the meida you clicked to search comments
+        {"fields": "comments{username, text, replies, timestamp}"},
+        function(pin_pointComments){ 
+          console.log(pin_pointComments);//Return the comment 
+          
+          if('comments' in pin_pointComments){//Check if comments exsist
+            for(let i=0; i< pin_pointComments.comments.data.length; i++){//Loop throught each comment and push into store.state
+              state.theMediaComment.push(pin_pointComments.comments.data[i])
+            }            
+          }else{
+            console.log('There are no comments')
+          }
 
-      if(state.addClass === false){
-        body.classList.add(state.className);
-      }else{
-        body.classList.remove(state.className)
-      }
-    }  
+        }
+      )     
+    },
+
+    pushComment(state, Needed){
+      console.log(Needed);   
+      var current = new Date();
+      var theDay = current.toDateString();
+      window.FB.api(
+        Needed.id+'/comments',
+        'POST',
+        {"message": ""+ Needed.message +""},
+        function(response){
+          state.theMediaComment.unshift({id: response.id,
+                                        username: state.basic.userName,
+                                        text: Needed.message,
+                                        timestamp: theDay})
+          console.log(response)
+        }
+      )
+    },
+    
+    deleteComment(state, comment, index){
+      window.FB.api(
+        comment.id,
+        'DELETE',
+        function(responseDEL){
+          console.log(responseDEL);
+          state.theMediaComment.splice(index, 1); 
+        }
+      )      
+    },
+
+    clearComment(state){
+      state.theMediaComment = [] //Clear out comment, prevent comment duplicated
+    },
+
+    convertTime(state, timeCode){ //Convert to human readable time
+      var theTime = new Date(timeCode.stamp).getTime();
+      var whatTime = new Date(theTime).toDateString();
+      state.theMediaComment[timeCode.index].timestamp = whatTime; //change the valve
+    },
   },
 
   actions: {
@@ -176,6 +154,7 @@ export default createStore({
         }        
       }).catch((reject) => {
         console.log(reject);
+        context.state.isProcessing = true;
       })
     },
 
@@ -207,6 +186,7 @@ export default createStore({
         }        
       }).catch((reject) => {
         console.log(reject);
+        context.state.isProcessing = true;
       })
     },
 
@@ -226,76 +206,51 @@ export default createStore({
         }
       });
     },
-    
-    toComment(context){
-      context.dispatch('staticLoad_comments').then((resolve) => {
+    /*search comments*/ 
+    searchComments(context, data){
+      context.dispatch('pin_point_Comments', data).then((resolve) => {
         console.log(resolve.message);
         resolve.toDo();
-        if(Object.keys(context.state.media_mentions).length > 0){
-          var sortComment = context.state.media_comments;
-          for(let i=0; i < sortComment.length; i++){
-            var timeCode = sortComment[i].timestamp;
-            sortComment[i].timestamp = context.commit('convertTime',timeCode);
-            context.state.isProcessing = true;
-          }          
-        }
+        context.state.isProcessing = true;
       }).catch((reject) => {
-        console.log(reject);
-      })      
+        console.log(reject)
+        context.state.isProcessing = true;
+      })
     },
 
-    staticLoad_comments(context, data){
+    pin_point_Comments(context, data){
       return new Promise((resolve, reject) => {
         if(!context.state.isProcessing){
-          reject('error')
+          reject('pin-point failed')
         }else{
           resolve({
-            message: 'Proceeding to mutation',
+            message: 'Processing...',
             toDo: function(){
-              context.commit('toComment', data);
-              console.log('comments length: ',Object.keys(context.state.media_comments).length);
+              context.commit('searchComments', data) 
+              console.log('clickedMeida ', data);
               context.state.isProcessing = false;
             }
           })          
         }
-      })      
+      })
     },
 
-    // getComments(context){
-    //   context.dispatch('processComments').then((resolve) => {
-    //     console.log(resolve.message);
-    //     resolve.toDo()
-    //     if(Object.keys(context.state.media_mentions).length > 0){
-    //       var sortComment = context.state.media_comments;
-    //       for(let i=0; i < sortComment.length; i++){
-    //         var timeCode = sortComment[i].timestamp;
-    //         sortComment[i].timestamp = context.commit('convertTime',timeCode);
-    //         context.state.isProcessing = true;
-    //       }          
-    //     }
-    //   }).catch((reject) => {
-    //     console.log(reject)
-    //   })
-    // },
+    convertTime(context, timeCode){//return the value
+      return new Promise((resolve, reject) => {
+        if(!context.state.isProcessing){
+          reject('action convertTime failed')
+        }else{
+          resolve({
+            message: 'converting',
+            convert: function(){
+              context.commit('convertTime', timeCode);
+            }
+          })
+        }
+      }) 
+    }
 
-    // processComments(context, data){
-    //   return new Promise((resolve, reject) => {
-    //     if(!context.state.isProcessing){
-    //       reject('error')
-    //     }else{
-    //       resolve({
-    //         message: 'Proceeding to mutation',
-    //         toDo: function(){
-    //           context.commit('getComments', data) 
-    //           console.log('comments length: ',Object.keys(context.state.media_comments).length);
-    //           context.state.isProcessing = false;
-    //         }
-    //       })          
-    //     }
-    //   })
-    // }
   },
-  
   modules: {
   }
 })
