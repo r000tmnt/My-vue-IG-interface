@@ -90,14 +90,16 @@ export default createStore({
         function(pin_pointComments){ 
           console.log(pin_pointComments);//Return the comment 
           
+          // var theTime, whatTime
           if('comments' in pin_pointComments){//Check if comments exsist
             for(let i=0; i< pin_pointComments.comments.data.length; i++){//Loop throught each comment and push into store.state
               state.theMediaComment.push(pin_pointComments.comments.data[i])
+              console.log(state.theMediaComment[i]);
             }            
           }else{
             console.log('There are no comments')
           }
-
+          console.log('comment length',state.theMediaComment.length);
         }
       )     
     },
@@ -135,11 +137,13 @@ export default createStore({
       state.theMediaComment = [] //Clear out comment, prevent comment duplicated
     },
 
-    convertTime(state, timeCode){ //Convert to human readable time
-      var theTime = new Date(timeCode.stamp).getTime();
-      var whatTime = new Date(theTime).toDateString();
-      state.theMediaComment[timeCode.index].timestamp = whatTime; //change the valve
-    },
+    convertTime(state, data){
+      for(let i=0; i< data.length; i++){//Loop throught each comment
+        var theTime = new Date(data[i].timestamp).getTime()
+        var whatTime = new Date(theTime).toDateString();//Convert to human readable time
+        data[i].timestamp = whatTime; //Assign the value
+      }
+    }
   },
 
   actions: {
@@ -149,6 +153,7 @@ export default createStore({
         resolve.toDo();
         if(context.state.media_stories){
           console.log('stories length: ',Object.keys(context.state.media_stories).length)
+          context.commit('convertTime', context.state.media_stories)
           context.commit('viewStories');
           context.state.isProcessing = true;
         }        
@@ -181,6 +186,7 @@ export default createStore({
         resolve.toDo();
         if(Object.keys(context.state.media_mentions).length > 0){
           console.log('mentions length: ',Object.keys(context.state.media_mentions).length)
+          context.commit('convertTime', context.state.media_mentions)
           context.commit('viewMentions');
           context.state.isProcessing = true;
         }        
@@ -199,7 +205,7 @@ export default createStore({
             message: 'Proceeding to mutation',
             toDo: function(){
               context.commit('toMentions', data);
-              console.log('mentions length: ',Object.keys(context.state.media_mentions).length);
+              console.log('mentions length: ',context.state.media_mentions.length);
               context.state.isProcessing = false;
             }
           })
@@ -227,28 +233,12 @@ export default createStore({
             message: 'Processing...',
             toDo: function(){
               context.commit('searchComments', data) 
-              console.log('clickedMeida ', data);
-              context.state.isProcessing = false;
+              context.state.isProcessing = false
             }
           })          
         }
       })
     },
-
-    convertTime(context, timeCode){//return the value
-      return new Promise((resolve, reject) => {
-        if(!context.state.isProcessing){
-          reject('action convertTime failed')
-        }else{
-          resolve({
-            message: 'converting',
-            convert: function(){
-              context.commit('convertTime', timeCode);
-            }
-          })
-        }
-      }) 
-    }
 
   },
   modules: {

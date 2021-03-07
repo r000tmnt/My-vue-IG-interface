@@ -12,7 +12,7 @@
   <displayStories v-if="$store.state.currentLocation === 'story'"></displayStories>
   <displayMention v-if="$store.state.currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
-  <footer class="bg_color">&copy; 2021 ParkCorner</footer>
+  <footer class="bg_color" :class="{hide_footer: modal_open === true}">&copy; 2021 ParkCorner</footer>
 </template>
 
 <script>
@@ -91,8 +91,9 @@ export default {
               
           for(let i=0; i < src.data.length; i++){
             pics.push(src.data[i]);
-          }
-            vm.$store.commit('toPosts', pics);
+            vm.$store.commit('convertTime', pics);
+          }  
+          vm.$store.commit('toPosts', pics);
         });
     },
 
@@ -146,6 +147,10 @@ body{
   background-color: rgb(20, 20, 20);
 }
 
+.hide_footer{
+  position: unset;
+}
+
 .bg_color{
   background-color: #383434;
   color: white;
@@ -176,9 +181,8 @@ header{
 footer{
   text-align: center;
   padding: 1%;
-  position: fixed;
+  position: sticky;
   left: 0;
   bottom: 0;
-  width: 100%;
 }
 </style>

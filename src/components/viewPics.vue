@@ -5,52 +5,61 @@
     <div style="clear: both"></div>
 
       <div class="forFlex flex">
-        <div id="view">
+        <div id="view" :class="{tooLarge: isToolarge}">
           <img id="pic" :src="media.media_url" alt="not found">
         </div>
 
         <div id="info">
-            <div class="profile flex">
-              <img :src="$store.state.basic.profile_pic" alt="">
-              <span>{{$store.state.basic.userName}}</span>
+            <div class="caption text-align">
+              {{media.caption}}
+              <small>{{media.timestamp}}</small>
             </div>
 
             <div class="subInfo flex">
               <div class="likes">{{media.like_count}}個讚</div>
-              &nbsp;&nbsp;
-              <div class="comments_count">{{media.comments_count}}個留言</div>
+                &nbsp;&nbsp;
+              <div class="comments_count">{{media_comments_count}}個留言</div>
             </div>
 
-            <div class="caption text-align">
-            {{media.caption}}
-            </div>
-
-            <div class="comments text-align">
+            <div class="comments">
               <div class="input">
-                <textarea id="pushNew" placeholder="留言" :style="{'height' : autoResize + 'px'}" v-model="newComment" @keyup.enter="textAreaResize()"></textarea>
+                <textarea id="pushNew" placeholder="留言" v-model="newComment" @keyup.enter="textAreaResize()"></textarea>
                 <button class="push">
                   <img src="../assets/sent.png" alt="Not found" @click="pushComment(media)">
                 </button>
               </div>
 
-              <div id="noComment text-align" v-if="$store.state.theMediaComment.length === 0">
-                尚無留言，搶個頭香吧。
-              </div>
+                <div id="noComment" class="text-align" v-if="$store.state.theMediaComment.length === 0">
+                  尚無留言，搶個頭香吧。
+                </div>
 
-              <div class="comment_list" v-else>
-
-                <section>
-                  <div class="vistor" v-for="(comment, index) in $store.state.theMediaComment" :key="comment.id">
-                    <div class="comment">
-                      <button class="del" @click="deleteComment(comment, index)">X</button>
-                      <h4>{{comment.username}}: {{comment.text}}</h4>
-                      <small>{{comment.timestamp}}</small>
-                    </div>
-                  </div>
-                </section>
-        
-              </div>
+                <div class="comment_list" v-else>
+                  <section>
+                      <transition-group name="comments">
+                      <div class="vistor" v-for="(comment, index) in MediaComment" :key="comment.id">
+                          <div class="comment">
+                            <button class="del" @click="deleteComment(comment, index)">X</button>
+                            <h4>{{comment.username}}: {{comment.text}}</h4>
+                            <small>{{comment.timestamp}}</small>
+                          </div>                      
+                      </div>
+                      </transition-group>
+                  </section>
+              </div>                
             </div>
+        </div>
+
+        <div id="seeMore" :style="{'height': mediaHeight + 'px'}">
+            <a class="profile flex" @click="closeModal()">
+              <img :src="$store.state.basic.profile_pic" alt="">
+              <span>{{$store.state.basic.userName}}</span>
+            </a>
+
+            <ul class="otherPics">
+              <li class="pic" v-for="(post, index) in $store.state.media_posts" :key="post.id">
+                <img :src="post.media_url" alt="Not found" @click="clickedMedia_change(index)">
+              </li>
+            </ul>
         </div>
       </div>
   </div>
@@ -67,7 +76,9 @@ export default {
   
   data(){
     return{
+      isToolarge: false,
       MediaComment: [],
+      media_comments_count: '',
       newComment: '',
       autoResize: 20,
       handler: {
@@ -78,6 +89,17 @@ export default {
   },
 
   methods: {
+    ifToolarge(){
+      var pic = document.getElementById("pic") //Incase if the images is too large
+      console.log('image height: ',pic.offsetHeight, 'innerWindow height', window.innerHeight)
+      if(pic.offsetHeight > window.innerHeight){
+        this.isToolarge = true;
+      }else{
+        this.isToolarge = false;
+        console.log('No need for resize')
+      }
+    },
+
     textAreaResize(){
       this.autoResize = this.autoResize+20;
 
@@ -91,6 +113,7 @@ export default {
       if(this.newComment !== ''){ //Make sure there's something to push
         this.$store.commit('pushComment', Needed);
         this.newComment = ''; //Clear 
+        this.media_comments_count++;
       }
     },
 
@@ -98,6 +121,7 @@ export default {
       let ask = confirm('您希望刪除 '+comment.text+' 這個留言嗎?')
       if(ask){
         this.$store.commit('deleteComment', comment, index)
+        this.media_comments_count--;
       }else{
           console.log("好險沒刪掉...")
         }
@@ -107,34 +131,49 @@ export default {
       //Remember to clear comments 
       this.$store.commit('clearComment')
       this.$emit('close', this.handler);
+    },
+
+    clickedMedia_change(index){
+      this.$store.commit('clearComment')
+      this.$emit('change', index);
+      this.mediaWidth = ''; //Reset the width
     }
   },
+
   beforeMount(){
     this.MediaComment = this.$store.state.theMediaComment;
+    this.media_comments_count = this.media.comments_count;
     console.log('beforeMount', this.MediaComment);
   },
+  mounted(){
+    this.ifToolarge();
+  },
   updated(){
-    console.log('updated', 'Make sure pushes are done', 'thecomments length: ', this.MediaComment.length)
+    this.MediaComment = this.$store.state.theMediaComment;
+    this.media_comments_count = this.media.comments_count;
+    this.ifToolarge();
     if(this.MediaComment.length > 0){
-      for(let i=0; i < this.MediaComment.length; i++){
-        var timeCode = { stamp: this.MediaComment[i].timestamp, index: i,};
-        //promise chained from vuex action
-         this.$store.dispatch('convertTime',timeCode).then((resolve) => {
-          console.log(resolve.message);
-          resolve.convert();
-        }).catch((reject) => {
-          console.log(reject);
-        })
-      }          
-    }else{
-      console.log('condition not match');
-    }      
+      this.$store.commit('convertTime', this.MediaComment);
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .comments-enter-active, .comments-leave-active{/* vue transition classes */ 
+    transition: all 1s ease;
+  }
+
+  .comments-enter-from, .comments-leave-to{/* vue transition classes */ 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .tooLarge{
+    width: 648px;
+  }
+  
   .flex{
     display: flex;
     justify-content: center;
@@ -165,7 +204,7 @@ export default {
 
   .forFlex{
     /* border: 1px solid red; */
-    width: 950px;
+    width: 100vw;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -173,11 +212,17 @@ export default {
   }
 
   #view{
-    margin-bottom: -5px;
+    background-color: black;
   }
 
   #view > img{
     max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
   }
 
   #info{
@@ -187,16 +232,23 @@ export default {
     color:#fff;
   }
 
+  .caption > small{
+    opacity: 0.5;
+  }
+
   .profile{
-    flex-wrap: wrap;
-    padding: 0 0 1.5% 0;
+    /* border: 1px solid blue; */
+    padding: 3.5%;
+    justify-content: flex-start;
+    text-decoration: none;
+    color: white;
   }
 
   .profile > span{
     /* border: 1px solid red; */
     display: inline-block;
     font-size: 1rem;
-    margin: 1.5vh 1vw ;
+    margin: 0.7vw;
   }
 
   .profile > img{
@@ -230,21 +282,33 @@ export default {
   .subInfo{
     padding: 2% 0 1.5% 0;
     border-bottom: 1px solid #fff;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  #noComment{
+    margin-top: 10px;
+  }
+
+  .comments{
+    padding: 13px
   }
 
   .comment{
-    padding: 0 1%;
+    padding: 2%;
+    background-color: #1e1f1e;
+    border-radius: 10px;
+    margin: 10px;
   }
 
   .comment:hover{
-    background:white;
-    color: #232;
+    background: rgb(61 66 61);
     transition: 0.5s;
   }
 
+
   .comment > h4{
+    margin: 0;
     border: 1px solid rgba(34, 51, 34, 0);
-    margin-bottom: -1px;
   }
 
   .comment > small{
@@ -252,11 +316,16 @@ export default {
     display: inline-block;
   }
 
+  .input{
+    text-align: center;
+  }
+
   #pushNew{
     border: none;
     resize: none;
-    transition: 0.5s ease-in-out;
-    width: 13vw;
+    transition: 0s ease-in-out;
+    width: 210px;
+    height: 20px;
     background-color: #1e1f1e;
     color: white;
   }
@@ -298,50 +367,129 @@ export default {
     transition: 0.5s;
   }
 
-  /* @media screen and (max-width: 1442px) {
+  #seeMore{
+    /* border: 1px solid red; */
+    background-color: #232;
+  }
+
+  .otherPics{
+    padding: 0 4%;
+    height: 819px;
+    overflow-y: scroll;
+  }
+
+  .otherPics::-webkit-scrollbar{ /* -webkit-scroll access scroll bar style */ 
+    width: 12px;
+  }
+
+  .otherPics::-webkit-scrollbar-track{ /* scrollbar track */
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .otherPics::-webkit-scrollbar-thumb{ /* scrollbar handel */
+    background-color: #1e1f1e;
+  }
+
+  .otherPics > .pic{
+    list-style: none;
+    margin: 5px 0;
+  }
+
+  .pic > img{
+    width: 167px;
+    height: 167px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius:  10px;
+    opacity: 0.7;
+  }
+
+  .pic > img:hover{
+    opacity: 1;
+    transition: opacity .1s ease;
+  }
+
+     @media screen and (max-width: 1081px){
+     #pushNew{
+       width: auto;
+     }
+   }
+
+  @media screen and (max-width: 963px){
+     #pushNew{
+       width: 131px;
+     }
+   }
+
+  @media screen and (max-width: 950px) {
     .modal{
+      width: auto;
       overflow: scroll;
     }
     
-    .forFlex{
+    .forFlex{ /* Switch to portrait, disable various positioning for proper dispaying  */
       flex-direction: column;
+      width: auto;
+      top: unset;
+      left: unset;
+      transform: unset;
+    }
+
+    .close{
+      margin: 1% 2% 1% 1%;
+    }
+
+    .caption{
+      padding: 2%;
+    }
+
+    .subInfo{
+      padding-top: 0;
     }
 
     #view{
-      padding: 0 0 5vh 0;
-      width: 90vw!important;
+      transition: all 0.5s ease;
+      width: unset; 
+      margin: 0 auto;
+      margin-bottom: -5px;
     }
 
     #view > img{
-      display: block;
-      margin: auto;
-    }
-
-    .profile{
-      padding: unset;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding-bottom: 1.5vh;
-    }
-
-    .caption, .comments{
-      text-align: center;
+      transform: unset;
     }
 
     #info{
-      margin: 0!important;
+      width: 100vw;
     }
 
-    .comment{
+     /* .push{
+      width: 32px;
+    }     */
+
+    #pushNew{
+       width: 51vw;
+     }
+
+    .profile{
+      display: inline-flex;
+    }
+    
+    .otherPics{
+      width: 95vw;
+      height: unset;
+      overflow-y: unset;
+      overflow-x: scroll;
+      white-space: nowrap;
+      padding: 0 0 0 4%;
+    }
+
+    .otherPics > .pic{
       display: inline-block;
-    }
-
-    .comment_list{
-      margin-top: 3vh;
+      margin: 0 5px;
     }
   }
 
-  @media screen and (max-width: 770px) {
+  /* @media screen and (max-width: 770px) {
     #view{
       width: 100%!important;
       padding: 0 0 5vh 0;
@@ -356,27 +504,15 @@ export default {
       margin: 7.5vh 0 4px 0;
       font-size: 1.5rem;
     }
-  }
+  }*/
 
   @media screen and (max-width: 420px) {
-    .profile{
-      padding: 0 2vw 1.5vh 2vw;
+    #forCenter{
+      margin-top: 6vh;
     }
 
-    .caption > h4{
-      padding: 1px;
+    #view{
+      width: 100vw;
     }
-
-    .input::before{
-      content: "";
-    }
-
-    #pushNew{
-      width: 75vw;
-    }
-
-    .push{
-      margin: 0 1.5%;
-    }
-  } */
+  } 
 </style>

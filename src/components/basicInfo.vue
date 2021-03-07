@@ -299,7 +299,7 @@ ul > li{
 }
 
 #sections > ul > li{
-  margin: 0 3vw;
+  padding: 0 3vw;
 }
 
 @media screen and (max-width: 1411px){
@@ -370,6 +370,8 @@ ul > li{
  .profile_pic {
     margin-left: -33vw!important;
     transition: 0.5s;
+    width: 100px;
+    height: 100px;
   }
 
  .biography > h4{
@@ -387,6 +389,10 @@ ul > li{
 
  .sections{
    margin-top: 0!important;
+ }
+
+ .sections > ul > li{
+   padding: 0 15vw;
  }
 }
 

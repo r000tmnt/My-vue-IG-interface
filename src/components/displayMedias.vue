@@ -7,7 +7,7 @@
         'background-position':'center'}" @click="viewing(n)">
         </div>
 
-        <viewPics v-if="isViewing === true" :media="clickedMedia" @close="closeModal($event)"></viewPics>
+        <viewPics v-if="isViewing === true" :media="clickedMedia" @close="closeModal($event)" @change="clickedMedia_change($event)"></viewPics>
   </div>
 </div>
 
@@ -36,7 +36,7 @@ export default {
   },
   methods:{
       viewing(n){
-        this.clickedMedia = this.$store.state.media_posts[n-1] //Push the info of the photo  
+        this.clickedMedia = this.$store.state.media_posts[n-1] //Push the info of the photo
         console.log(this.clickedMedia);           
         this.getComments(this.clickedMedia).then((resolve) => {
           console.log(resolve.message);
@@ -93,7 +93,12 @@ export default {
       }else{
         body.classList.remove(this.className)
       }
-    }  
+    },
+    
+    clickedMedia_change(index){
+      this.clickedMedia = this.$store.state.media_posts[index];
+      this.$store.dispatch('searchComments', this.clickedMedia); 
+    }
   },
   beforeUpdate(){
     console.log(this.$store.state.media_posts);
