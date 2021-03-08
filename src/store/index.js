@@ -23,8 +23,9 @@ export default createStore({
 
       media_stories: [],
 
-      media_mentions: [],     
+      media_mentions: [],  
 
+      clickedMedia: {},
       theMediaComment: [],//the comment of the post you clicked 
 
       currentLocation: 'post',
@@ -62,6 +63,11 @@ export default createStore({
     toMentions(state, data){
       state.media_mentions = data;
       console.log(state.media_mentions)
+    },
+
+    toClickedMedia(state, data){
+      state.clickedMedia = data;
+      console.log(state.clickedMedia)
     },
 
     viewStories(state){

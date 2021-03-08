@@ -7,7 +7,7 @@
         'background-position':'center'}" @click="viewing(n)">
         </div>
 
-        <viewPics v-if="isViewing === true" :media="clickedMedia" @close="closeModal($event)" @change="clickedMedia_change($event)"></viewPics>
+        <viewPics v-if="isViewing === true"  @close="closeModal($event)" @change="clickedMedia_change($event)"></viewPics>
   </div>
 </div>
 
@@ -36,8 +36,7 @@ export default {
   },
   methods:{
       viewing(n){
-        this.clickedMedia = this.$store.state.media_posts[n-1] //Push the info of the photo
-        console.log(this.clickedMedia);           
+        this.clickedMedia = this.$store.state.media_posts[n-1] //Push the info of the photo           
         this.getComments(this.clickedMedia).then((resolve) => {
           console.log(resolve.message);
           resolve.toDo();       
@@ -47,7 +46,10 @@ export default {
             this.addClass = false;
             this.defineScrollbar();            
           }
-        }).catch((reject) => {
+        }).then(()=>{
+          this.$store.commit('toClickedMedia', this.clickedMedia);
+        })
+        .catch((reject) => {
           console.log(reject)
         })                  
     },
@@ -80,6 +82,7 @@ export default {
 
     closeModal(val){
       console.log(val)
+      this.$parent.modal_open = false;
       this.isViewing = val.isViewing;
       this.addClass = val.addClass;
       this.defineScrollbar();
@@ -97,6 +100,7 @@ export default {
     
     clickedMedia_change(index){
       this.clickedMedia = this.$store.state.media_posts[index];
+      this.$store.commit('toClickedMedia', this.clickedMedia);
       this.$store.dispatch('searchComments', this.clickedMedia); 
     }
   },

@@ -4,19 +4,19 @@
     <button class="close" @click="closeModal()">X</button>
     <div style="clear: both"></div>
 
-      <div class="forFlex flex">
-        <div id="view" :class="{tooLarge: isToolarge}">
-          <img id="pic" :src="media.media_url" alt="not found">
+      <div class="forFlex flex" v-if="$store.state.clickedMedia">
+        <div id="view">
+          <img id="pic" @load="checkToolarge()" ref="ifToolarge" :class="{tooLarge: ifToolarge.isToolarge === true}" :src="$store.state.clickedMedia.media_url" alt="not found">
         </div>
 
         <div id="info">
             <div class="caption text-align">
-              {{media.caption}}
-              <small>{{media.timestamp}}</small>
+              {{$store.state.clickedMedia.caption}}
+              <small>{{$store.state.clickedMedia.timestamp}}</small>
             </div>
 
             <div class="subInfo flex">
-              <div class="likes">{{media.like_count}}個讚</div>
+              <div class="likes">{{$store.state.clickedMedia.like_count}}個讚</div>
                 &nbsp;&nbsp;
               <div class="comments_count">{{media_comments_count}}個留言</div>
             </div>
@@ -70,13 +70,13 @@
 <script>
 export default {
   name: 'viewPics',
-  props: {
-    media: {},
-  },
-  
   data(){
     return{
-      isToolarge: false,
+      ifToolarge : {
+        height: null,
+        isToolarge: false,
+      },
+      imgLoad: false,
       MediaComment: [],
       media_comments_count: '',
       newComment: '',
@@ -89,16 +89,18 @@ export default {
   },
 
   methods: {
-    ifToolarge(){
-      var pic = document.getElementById("pic") //Incase if the images is too large
-      console.log('image height: ',pic.offsetHeight, 'innerWindow height', window.innerHeight)
-      if(pic.offsetHeight > window.innerHeight){
-        this.isToolarge = true;
-      }else{
-        this.isToolarge = false;
-        console.log('No need for resize')
-      }
-    },
+    checkToolarge(){
+        this.imgLoad = true;
+        var screenHeight = window.innerHeight;
+        this.ifToolarge.height = this.$refs.ifToolarge.offsetHeight
+        console.log('screenHeight: ', screenHeight, 'mediaHeight: ', this.ifToolarge.height)         
+        if(this.ifToolarge.height > screenHeight){
+          this.ifToolarge.isToolarge = true;
+        }else{
+          this.ifToolarge.isToolarge = false;
+          console.log('No need to resize')
+        }        
+    },   
 
     textAreaResize(){
       this.autoResize = this.autoResize+20;
@@ -136,22 +138,16 @@ export default {
     clickedMedia_change(index){
       this.$store.commit('clearComment')
       this.$emit('change', index);
-      this.mediaWidth = ''; //Reset the width
     }
   },
 
-  beforeMount(){
-    this.MediaComment = this.$store.state.theMediaComment;
-    this.media_comments_count = this.media.comments_count;
-    console.log('beforeMount', this.MediaComment);
-  },
   mounted(){
-    this.ifToolarge();
-  },
-  updated(){
     this.MediaComment = this.$store.state.theMediaComment;
-    this.media_comments_count = this.media.comments_count;
-    this.ifToolarge();
+    this.media_comments_count = this.$store.state.clickedMedia.comments_count;
+  },
+  updated(){   
+    this.MediaComment = this.$store.state.theMediaComment;
+    this.media_comments_count = this.$store.state.clickedMedia.comments_count;
     if(this.MediaComment.length > 0){
       this.$store.commit('convertTime', this.MediaComment);
     }
@@ -171,7 +167,7 @@ export default {
   }
 
   .tooLarge{
-    width: 648px;
+    width: 720px!important;
   }
   
   .flex{
