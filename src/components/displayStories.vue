@@ -5,17 +5,22 @@
 
 <div id="hasStories" v-else @click="pauseClick" @dblclick="goBack">
   
-  <div class="showStory">
+  <div class="showStory" v-if="sts">
     <div class="main">
       <div id="sts">
         <div id="timeCount" class="relative">
           <div class="run" :style="{animationPlayState: playstate}"></div>
         </div>
         <div class="profile-sts relative">
-          <img :src="$store.state.basic.profile_pic" alt="Not found" style="border-radius: 50%">
-          {{$store.state.basic.userName}}
+          <div class="profile">
+            <img :src="$store.state.basic.profile_pic" alt="Not found" style="border-radius: 50%; margin-right: 5px">
+            <div class="subInfo">
+              {{$store.state.basic.userName}}
+              <small>{{sts[storyIndex].timestamp}}</small>
+            </div>
+          </div>
         </div>
-        <img :src="$store.state.media_stories[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
+        <img :src="sts[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
       </div>
   </div>
   
@@ -32,7 +37,8 @@ export default {
       timer: null,
       pause: false,
       playstate: 'running',
-      sts_length: '', //vue will access the defalut value first, so set it to empty. Set to 0 will result as nothing to show
+      sts: [],
+      sts_length: '', 
       storyIndex: 0
     }
   },
@@ -73,10 +79,18 @@ export default {
       }
     }
   },
+  mounted(){
+    this.sts = this.$store.state.media_stories
+    this.sts_length = Object.keys(this.sts).length
+    console.log('mounted',this.sts, this.sts_length);
+  },
   beforeUpdate(){
-    this.sts_length = Object.keys(this.$store.state.media_stories).length;
-    console.log(this.sts_length)
-    console.log('beforeUpdate',Object.keys(this.$store.state.media_stories).length);
+    this.sts = this.$store.state.media_stories
+    this.sts_length = Object.keys(this.sts).length
+    console.log('beforeUpdate',this.sts[0], this.sts_length);
+    for(let i=0; i< this.sts_length; i++){
+      this.$store.commit('convertTime', this.sts)
+    }
     if(this.sts_length > 0){//Start counting when there are stories to show
       this.countDown();
     }    
@@ -140,6 +154,8 @@ center{
   overflow: hidden;
   margin-top: 0.5vh;
   opacity: 0.7;
+  position: relative;
+  z-index: 2;
 }
 
 .run{
@@ -156,6 +172,7 @@ center{
   width: 514px;
   margin: 0 auto;
   overflow: hidden;
+  position: relative;
 }
 
 #sts > img{
@@ -163,14 +180,29 @@ center{
 }
 
 .profile-sts{
+  opacity: 0;
+  color: white;
+  z-index: 2;
+}
+
+.profile-sts:hover{
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.profile{
   width: 20px;
   height: 20px;
   display: flex;
-  padding: 1%;
+  padding: 1%;  
 }
 
-.profile-sts > img{
+.profile > img{
   max-width: 100%;
+}
+
+small{
+  opacity: 0.7;
 }
 
 @media screen and (max-width: 900px) {
@@ -183,9 +215,11 @@ center{
   .showStory{
     width: 100vw;
   }
+}
 
+@media screen and (max-width: 514px) {
   .main{
-    width: 520px;
+    width: auto;
   }
 }
 

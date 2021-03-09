@@ -149,6 +149,7 @@ body{
 
 .hide_footer{
   position: unset;
+  width: unset;
 }
 
 .bg_color{

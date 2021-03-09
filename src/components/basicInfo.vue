@@ -30,11 +30,11 @@
 
   <div id="sections">
     <ul class="flex">
-      <li class="section post" :class="{here: $store.state.currentLocation === 'post'}">
-        <img src="../assets/image.svg" alt="Not found" @click="refreash_Posts()">
+      <li class="section post" :class="{here: $store.state.currentLocation === 'post'}" @click="refreash_Posts()">
+        <img src="../assets/image.svg" alt="Not found">
       </li>
-      <li class="section mention" :class="{here: $store.state.currentLocation === 'mention'}">
-        <img src="../assets/pin.svg" alt="Not found" @click="getTags()">
+      <li class="section mention" :class="{here: $store.state.currentLocation === 'mention'}" @click="getTags()">
+        <img src="../assets/pin.svg" alt="Not found">
       </li>
     </ul>
   </div>
@@ -82,6 +82,7 @@ export default {
                   console.log(vm.isfetching);
                   vm.$nextTick(()=>{
                     vm.$store.dispatch('toStories', vm.getData);
+                    vm.$parent.modal_open = true;
                   })
                 }
                 vm.isfetching = true;                
@@ -191,17 +192,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @keyframes isHere{
-  from{
-    filter: invert(1) brightness(0.5);
-  }
-  to{
+  0%, 100%{
     filter: brightness(100);
-    border-bottom: 1px solid white;
   }
 }
 
 .here{
   animation: isHere 0.5s ease-in-out forwards;
+  color: white;
+  border-bottom: 1px solid white;
 }
 
 .flex{
@@ -210,7 +209,7 @@ export default {
 
 #banner{
   width: 100%;
-  height: 23.5vh;
+  height: 231px;
   position: absolute;
   z-index: -1;
   opacity: 0.5;
@@ -299,7 +298,22 @@ ul > li{
 }
 
 #sections > ul > li{
-  padding: 0 3vw;
+  width: 100%;
+  text-align: center;
+}
+
+.post::after{
+  content: '推文';
+  position: relative;
+  top: -10px;
+  left: 10px;
+}
+
+.mention::after{
+  content: '已標記';
+  position: relative;
+  top: -10px;
+  left: 10px;
 }
 
 @media screen and (max-width: 1411px){
@@ -342,6 +356,22 @@ ul > li{
   }
 }
 
+@media screen and (max-width: 708px) {
+  .post::after{
+    content: none;
+  }
+
+  .mention::after{
+    content: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #sections > ul{
+    width: unset;
+  }
+}
+
 @media screen and (max-width: 576px) {
  #fromData{
    width: 100vw;
@@ -364,7 +394,7 @@ ul > li{
 
 @media screen and (max-width: 467px) {
  #banner{
-   height: 24vh;
+   height: 218px;
  }
 
  .profile_pic {
@@ -382,11 +412,6 @@ ul > li{
    font-size: 0.78rem;
  }
 
- .counts {
-   width: 90%;
-   margin-top: 50px;
- }
-
  .sections{
    margin-top: 0!important;
  }
@@ -398,7 +423,7 @@ ul > li{
 
 @media screen and (max-width: 387px) {
  #banner{
-   height: 29.5vh;
+   height: 214px;
  }
 
  .counts{

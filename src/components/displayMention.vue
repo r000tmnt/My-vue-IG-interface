@@ -7,10 +7,13 @@
   <div id="showMentioned" v-for="(mention, index) in mentions" :key="index">
     <img :src="mention.media_url" alt="Not found" @click="larger(mention)">
 
-    <div class="large" :class="{fadeIN: fadeIN}" v-if="enlarge.clicked === true">
+    <div id="mention_modal" :class="{fadeIN: fadeIN}" v-if="enlarge.clicked === true">
       <button class="close" @click="close">X</button>
-      <img class="enlarge" :src="enlarge.source" alt="Not found">
-    </div>
+        <div class="large">
+          <img class="enlarge" :src="enlarge.source" alt="Not found">
+          <div class="tag_by">由 {{mention.username}} 標記</div>
+        </div>             
+      </div>
   </div>
 </div>
   
@@ -86,6 +89,7 @@ export default {
 
 #showMentioned{
   width: 295px;
+  position: relative;
 }
 
 #showMentioned::after{
@@ -97,11 +101,20 @@ export default {
   cursor: pointer;
 }
 
-.large{
+#mention_modal{
+  background-color: rgba(34, 51, 34, 0.7);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+  color: white;
+  padding: 0 1vw 0 1vw;
+  z-index: 2;
+}
+
+.large{
+  width: 830px;
+  margin: 0 auto;
 }
 
 .large > .enlarge{
@@ -115,9 +128,8 @@ export default {
   float: right;
   font-size: 1.2rem;
   cursor: pointer;
-  margin: 1vh 0 0 0;
+  margin: 1vh 1vh 0 0;
   color: white ;
-  position: relative;
   z-index: 2;
 }
 
@@ -127,15 +139,19 @@ export default {
   transition: 0.5s;
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 830px) {
   .large{
-    width: 90vw;
+    width: 97vw;
   }
 }
 
 @media screen and (max-width: 576px) {
   #showMentioned{
-  width: 35vw;
-}
+  width: 25vw;
+  }
+
+  #mention_modal{
+    margin-top: 9vh;
+  }
 }
 </style>
