@@ -82,7 +82,6 @@ export default {
                   console.log(vm.isfetching);
                   vm.$nextTick(()=>{
                     vm.$store.dispatch('toStories', vm.getData);
-                    vm.$parent.modal_open = true;
                   })
                 }
                 vm.isfetching = true;                
@@ -290,6 +289,7 @@ ul > li{
   justify-content: center;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
+  transition: all 0.5s ease-in-out;
 }
 
 #sections > ul > li > img{
@@ -300,6 +300,8 @@ ul > li{
 #sections > ul > li{
   width: 100%;
   text-align: center;
+  transition: all 0.5s ease-in-out;
+  margin: 0;
 }
 
 .post::after{
@@ -368,7 +370,7 @@ ul > li{
 
 @media screen and (max-width: 600px) {
   #sections > ul{
-    width: unset;
+    width: 96vw;
   }
 }
 

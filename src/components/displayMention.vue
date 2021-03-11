@@ -139,19 +139,27 @@ export default {
   transition: 0.5s;
 }
 
+@media screen and (max-width: 955px) {
+  #showMentioned{
+    width: 31vw;
+  } 
+}
+
 @media screen and (max-width: 830px) {
   .large{
     width: 97vw;
   }
 }
 
-@media screen and (max-width: 576px) {
-  #showMentioned{
-  width: 25vw;
-  }
+@media screen and (max-width: 734px) {
+ #showMentioned{
+   width: 30.5vw;
+ } 
+}
 
-  #mention_modal{
-    margin-top: 9vh;
+@media screen and (max-width: 570px) {
+  #showMentioned{
+  width: 31.5vw;
   }
 }
 </style>

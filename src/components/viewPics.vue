@@ -238,6 +238,7 @@ export default {
     justify-content: flex-start;
     text-decoration: none;
     color: white;
+    cursor: pointer;
   }
 
   .profile > span{
