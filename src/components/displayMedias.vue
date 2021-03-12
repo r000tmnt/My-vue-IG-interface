@@ -1,8 +1,8 @@
-<template v-model="$store.state.media_posts">
+<template v-model="media_posts">
 <div class="frame">
-  <div id="photos" v-if="Object.keys($store.state.media_posts).length > 0">
-      <div class="medias" v-for="n in $store.state.mediaIndex" :class="{fadeIN: $store.state.fadeIN}" :key="n" :style="{ 
-        'background-image': 'url(' + $store.state.media_posts[n-1].media_url + ')', 
+  <div id="photos" v-if="media_posts.length > 0">
+      <div class="medias" v-for="n in mediaIndex" :class="{fadeIN: fadeIN}" :key="n" :style="{ 
+        'background-image': 'url(' + media_posts[n-1].media_url + ')', 
         'background-size': 'cover',
         'background-position':'center'}" @click="viewing(n)">
         </div>
@@ -11,7 +11,7 @@
   </div>
 </div>
 
-    <div class="more" v-if="$store.state.basic.medias !== $store.state.mediaIndex">
+    <div class="more" v-if="basic.medias !== mediaIndex">
       <button class="showMore" @click="showMore()">更多</button>
     </div>
 </template>
@@ -34,24 +34,38 @@ export default {
         clickedMedia: {},
       }
   },
+  computed:{
+    media_posts(){
+      return this.$store.state.media_posts
+    },
+    mediaIndex(){
+      return this.$store.state.mediaIndex
+    },
+    fadeIN(){
+      return this.$store.state.fadeIN
+    },
+    basic(){
+      return this.$store.state.basic
+    },
+    scrollY(){
+      return this.$store.state.scrollY
+    },
+  },
   methods:{
       viewing(n){
-        this.clickedMedia = this.$store.state.media_posts[n-1] //Push the info of the photo           
+        this.clickedMedia = this.media_posts[n-1] //Push the info of the photo           
         this.getComments(this.clickedMedia).then((resolve) => {
-          console.log(resolve.message);
           resolve.toDo();       
           if(this.isViewing === true){          
             this.$parent.modal_open = true;
-            this.$store.state.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+            this.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
             this.addClass = false;
             this.defineScrollbar();            
           }
         }).then(()=>{
           this.$store.commit('toClickedMedia', this.clickedMedia);
         })
-        .catch((reject) => {
-          console.log(reject)
-        })                  
+        .catch(() => {})                  
     },
 
     getComments(clickedMedia){
@@ -81,7 +95,6 @@ export default {
     },
 
     closeModal(val){
-      console.log(val)
       this.$parent.modal_open = false;
       this.isViewing = val.isViewing;
       this.addClass = val.addClass;
@@ -99,13 +112,10 @@ export default {
     },
     
     clickedMedia_change(index){
-      this.clickedMedia = this.$store.state.media_posts[index];
+      this.clickedMedia = this.media_posts[index];
       this.$store.commit('toClickedMedia', this.clickedMedia);
       this.$store.dispatch('searchComments', this.clickedMedia); 
     }
-  },
-  beforeUpdate(){
-    console.log(this.$store.state.media_posts);
   }
 }
 </script>

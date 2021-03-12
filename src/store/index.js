@@ -52,33 +52,33 @@ export default createStore({
 
     toPosts(state, data){
       state.media_posts = data;
-      console.log(state.media_posts);
     },
 
     toStories(state, data){
       state.media_stories = data;
-      console.log(state.media_stories)
     },
     
     toMentions(state, data){
       state.media_mentions = data;
-      console.log(state.media_mentions)
     },
 
     toClickedMedia(state, data){
       state.clickedMedia = data;
-      console.log(state.clickedMedia)
     },
 
     viewStories(state){
       state.currentLocation = 'story';
-      console.log(state.currentLocation) 
     },
     
     viewMentions(state){
       state.currentLocation = 'mention';
-      console.log(state.currentLocation)
-    },    
+    },
+    
+    refreash_Posts(state){
+      state.fadeIN = false;
+      state.currentLocation = 'post';
+      state.mediaIndex = 9; //Reset images    
+    },
 
     showMore(state){
       if(state.basic.medias - state.mediaIndex > 9){//if there's more, only reveal next 9 images
@@ -93,25 +93,17 @@ export default createStore({
       window.FB.api(
         data.id,//Use the id of the meida you clicked to search comments
         {"fields": "comments{username, text, replies, timestamp}"},
-        function(pin_pointComments){ 
-          console.log(pin_pointComments);//Return the comment 
-          
-          // var theTime, whatTime
+        function(pin_pointComments){           
           if('comments' in pin_pointComments){//Check if comments exsist
             for(let i=0; i< pin_pointComments.comments.data.length; i++){//Loop throught each comment and push into store.state
               state.theMediaComment.push(pin_pointComments.comments.data[i])
-              console.log(state.theMediaComment[i]);
             }            
-          }else{
-            console.log('There are no comments')
           }
-          console.log('comment length',state.theMediaComment.length);
         }
       )     
     },
 
-    pushComment(state, Needed){
-      console.log(Needed);   
+    pushComment(state, Needed){ 
       var current = new Date();
       var theDay = current.toDateString();
       window.FB.api(
@@ -123,7 +115,6 @@ export default createStore({
                                         username: state.basic.userName,
                                         text: Needed.message,
                                         timestamp: theDay})
-          console.log(response)
         }
       )
     },
@@ -132,8 +123,7 @@ export default createStore({
       window.FB.api(
         comment.id,
         'DELETE',
-        function(responseDEL){
-          console.log(responseDEL);
+        function(){
           state.theMediaComment.splice(index, 1); 
         }
       )      
@@ -145,7 +135,7 @@ export default createStore({
 
     convertTime(state, data){//state is needed for the function to work properly, not sure why though...
       var isArray = Array.isArray(data)//Check if it's an array or not
-      console.log(isArray)
+
       if(isArray === true){
         for(let i=0; i< data.length; i++){//Loop throught each comment as array
           var theTime = new Date(data[i].timestamp).getTime()
@@ -165,15 +155,12 @@ export default createStore({
   actions: {
     toStories(context, data){
       context.dispatch('processStories', data).then((resolve) => {
-        console.log(resolve.message);
         resolve.toDo();
         if(context.state.media_stories){
-          console.log('stories',context.state.media_stories)
           context.commit('viewStories');
           context.state.isProcessing = true;
         }        
-      }).catch((reject) => {
-        console.log(reject);
+      }).catch(() => {
         context.state.isProcessing = true;
       })
     },
@@ -196,16 +183,13 @@ export default createStore({
 
     toMentions(context, data){
       context.dispatch('processMentions', data).then((resolve) => {
-        console.log(resolve.message);
         resolve.toDo();
         if(Object.keys(context.state.media_mentions).length > 0){
-          console.log('mentions length: ',Object.keys(context.state.media_mentions).length)
           context.commit('convertTime', context.state.media_mentions)
           context.commit('viewMentions');
           context.state.isProcessing = true;
         }        
-      }).catch((reject) => {
-        console.log(reject);
+      }).catch(() => {
         context.state.isProcessing = true;
       })
     },
@@ -219,7 +203,6 @@ export default createStore({
             message: 'Proceeding to mutation',
             toDo: function(){
               context.commit('toMentions', data);
-              console.log('mentions length: ',context.state.media_mentions.length);
               context.state.isProcessing = false;
             }
           })
@@ -229,11 +212,9 @@ export default createStore({
     /*search comments*/ 
     searchComments(context, data){
       context.dispatch('pin_point_Comments', data).then((resolve) => {
-        console.log(resolve.message);
         resolve.toDo();
         context.state.isProcessing = true;
-      }).catch((reject) => {
-        console.log(reject)
+      }).catch(() => {
         context.state.isProcessing = true;
       })
     },

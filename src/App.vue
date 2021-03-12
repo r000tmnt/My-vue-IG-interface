@@ -8,9 +8,9 @@
     </div>
     <div style="clear: both"></div>
   <basicInfo></basicInfo>
-  <display-medias v-if="$store.state.currentLocation === 'post'" :urls="media_urls"></display-medias>
-  <displayStories v-if="$store.state.currentLocation === 'story'"></displayStories>
-  <displayMention v-if="$store.state.currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
+  <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
+  <displayStories v-if="currentLocation === 'story'"></displayStories>
+  <displayMention v-if="currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
 
   <footer class="bg_color" :class="{hide_footer: modal_open === true}">&copy; 2021 ParkCorner</footer>
 </template>
@@ -27,6 +27,11 @@ export default {
   name: 'App',
   components: {
     basicInfo, displayMedias, displayStories, displayMention
+  },
+  computed:{
+    currentLocation(){
+      return this.$store.state.currentLocation
+    }
   },
   data(){
     return{
@@ -46,7 +51,6 @@ export default {
         '/me/accounts',
         {"access_token": acToken},
         function(FBdata) {
-            console.log(FBdata)
             if(FBdata.data !== null){
               FBid = FBdata.data[0].id;
             }
@@ -60,8 +64,6 @@ export default {
         FBid,
         {"fields" : "instagram_business_account", "access_token": acToken},
         function(IGdata){
-          console.log(IGdata);
-
           var IGid = IGdata.instagram_business_account.id;
           vm.$store.state.Needed.IGid = IGid;
           vm.getBasic(vm, IGid, acToken);
@@ -73,9 +75,7 @@ export default {
       window.FB.api(
         IGid,
         {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website", "access_token": acToken},
-          function(basicData){
-          console.log(basicData);
-        
+          function(basicData){       
           vm.$store.commit('toBasic', basicData);
       });
     },
@@ -85,8 +85,6 @@ export default {
         IGid+"/media",
         {"fields":"media_url,caption,like_count,comments_count,timestamp", "access_token": acToken},
         function(src){
-          console.log(src);
-
           var pics = new Array();
               
           for(let i=0; i < src.data.length; i++){
@@ -117,8 +115,6 @@ export default {
       });
       
        window.FB.getLoginStatus(function(response){
-         console.log(response);
-        
          if(response.status === 'connected'){
             acToken = response.authResponse.accessToken;
          }

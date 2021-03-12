@@ -1,7 +1,7 @@
-<template v-model="$store.state.basic">
+<template v-model="basic">
 <div class="top_frame">
 
-  <div id="banner" :style="{'background-image':'url('+$store.state.basic.profile_pic+')',
+  <div id="banner" :style="{'background-image':'url('+basic.profile_pic+')',
                             'background-size': 'cover','background-position':'center',
                             'filter':'blur(5px)'}">
   </div>
@@ -9,20 +9,20 @@
   <div id="fromData">
       <div id="profile" class="flex">
         <div class="profile_pic">
-          <a class="section story" :class="{Here: $store.state.currentLocation === 'story'}" @click="getStories()">
-            <img :src="$store.state.basic.profile_pic" alt="Not Found">
+          <a class="section story" :class="{Here: currentLocation === 'story'}" @click="getStories()">
+            <img :src="basic.profile_pic" alt="Not Found">
           </a>
         </div>
           <div class="biography">
-             <h1>{{$store.state.basic.userName}}</h1>
-            <h4>{{$store.state.basic.bio}}
-              <a :href="$store.state.basic.web">{{$store.state.basic.web}}</a> 
+             <h1>{{basic.userName}}</h1>
+            <h4>{{basic.bio}}
+              <a :href="basic.web">{{basic.web}}</a> 
             </h4>
 
             <ul class="counts flex">
-              <li>追蹤:{{$store.state.basic.follower}}</li>
-              <li>追蹤者:{{$store.state.basic.followed}}</li>
-              <li>上傳:{{$store.state.basic.medias}}</li>
+              <li>追蹤:{{basic.follower}}</li>
+              <li>追蹤者:{{basic.followed}}</li>
+              <li>上傳:{{basic.medias}}</li>
             </ul>
           </div>
       </div>          
@@ -30,10 +30,10 @@
 
   <div id="sections">
     <ul class="flex">
-      <li class="section post" :class="{here: $store.state.currentLocation === 'post'}" @click="refreash_Posts()">
+      <li class="section post" :class="{here: currentLocation === 'post'}" @click="refreash_Posts()">
         <img src="../assets/image.svg" alt="Not found">
       </li>
-      <li class="section mention" :class="{here: $store.state.currentLocation === 'mention'}" @click="getTags()">
+      <li class="section mention" :class="{here: currentLocation === 'mention'}" @click="getTags()">
         <img src="../assets/pin.svg" alt="Not found">
       </li>
     </ul>
@@ -51,23 +51,30 @@ export default {
       getData: {} //a place for new datas before send to parent
     }
   },
+  computed:{
+    Needed(){
+      return this.$store.state.Needed
+    },
+    basic(){
+      return this.$store.state.basic
+    },
+    currentLocation(){
+      return this.$store.state.currentLocation
+    }
+  },
   methods: {
     getStories(){
       var vm = this;
       var stories_id = new Array();
       window.FB.api(
-        vm.$store.state.Needed.IGid,
-        {"fields":"stories", "access_token": vm.$store.state.Needed.acToken},
+        this.Needed.IGid,
+        {"fields":"stories", "access_token": this.Needed.acToken},
           function(sData){
-          console.log(sData);
-
           //get stories id
           if(!sData.stories){ //The api can only retrun stories within 24 hours
-            console.log("No stories in 24 hours.")
             vm.$store.commit('viewStories');
           }else{
             var S_id = sData.stories.data;
-            console.log(sData.stories.data);
 
             if(sData.stories.data){//Make ture there's something
               for(let i=0; i< S_id.length; i++){
@@ -75,21 +82,15 @@ export default {
               }
               vm.waitForloop(vm, stories_id)
               .then((resolve) => {
-                console.log(resolve.message);
                 resolve.toDo();
                 
                 if(vm.isfetching === false){
-                  console.log(vm.isfetching);
                   vm.$nextTick(()=>{
                     vm.$store.dispatch('toStories', vm.getData);
                   })
                 }
                 vm.isfetching = true;                
-              }).catch((message)=>{
-                console.log(message);
-              }
-                
-              )             
+              }).catch(()=>{})             
             }                  
           }
       });
@@ -108,10 +109,8 @@ export default {
                 window.FB.api(
                 stories_id[i],
                 'GET',
-                {"fields":"caption,media_url,timestamp", "access_token": vm.$store.state.Needed.acToken},
+                {"fields":"caption,media_url,timestamp", "access_token": this.Needed.acToken},
                 function(storyData) {
-                  console.log(vm.isfetching);
-                  console.log(storyData);
                   vm.getData[i] = storyData;
                   console.log(vm.getData[i]);
                 })
@@ -127,33 +126,26 @@ export default {
       var vm = this;
       var mentions = [];
       window.FB.api(
-        vm.$store.state.Needed.IGid+'/tags',
+        this.Needed.IGid+'/tags',
         'GET',
-        {"fields":"id,username,media_url", "access_token": vm.$store.state.Needed.acToken},
+        {"fields":"id,username,media_url", "access_token": this.Needed.acToken},
         function(tagged){
-          console.log(tagged.data);
           for(let i=0; i < tagged.data.length; i++){
             mentions.push(tagged.data[i]);
           }
 
-          console.log(mentions);
           if(mentions.length > 0){
             vm.getData = mentions;
-            console.log(vm.getData)
             vm.$nextTick(()=>{
               vm.$store.dispatch('toMentions', vm.getData);
             })
-          }else{
-            console.log('error');
-          }          
+          }        
         }
       )
     },
 
     waitForRefreash(){
-      var vm = this;
-      var IGid = vm.$store.state.Needed.IGid;
-      var acToken = vm.$store.state.Needed.acToken;      
+      var vm = this;  
       return new Promise((resolve, reject) => {
         if(!this.isfetching){
           reject('error')
@@ -161,7 +153,7 @@ export default {
           resolve({
             message: 'sucess',
             toDo: function(){
-              vm.$parent.getMedias(vm, IGid, acToken); 
+              vm.$parent.getMedias(vm, vm.Needed.IGid, vm.Needed.acToken); 
               vm.isfetching = false;
             }
           })
@@ -171,18 +163,12 @@ export default {
 
     refreash_Posts(){
       this.waitForRefreash().then((resolve) => {
-        console.log(resolve.message);
         resolve.toDo();
         if(this.isfetching === false){//Wait till api call to finish
-          this.$store.state.fadeIN = false;
-          this.$store.state.currentLocation = 'post';
-          this.$store.state.mediaIndex = 9 //Reset images 
-          console.log(this.$store.state.currentLocation)          
+          this.$store.commit('refreash_Posts');   
         }
         this.isfetching = true;
-      }).catch((reject) => {
-        console.log(reject)
-      })
+      }).catch((reject) => {console.log(reject)})
     }
   },
 }

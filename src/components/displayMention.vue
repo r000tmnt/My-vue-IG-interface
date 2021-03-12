@@ -1,5 +1,5 @@
 <template style="position: relative">
-<div id="noMention" v-if="Object.keys($store.state.media_mentions).length === 0">
+<div id="noMention" v-if="Object.keys(mentions).length === 0">
   <h1>有標記的相片會顯示在這裡</h1>
 </div>
 
@@ -25,7 +25,6 @@ export default {
   name: 'displayMention',
   data(){
     return{
-      mentions: [],
       fadeIN: false,
 
       enlarge: {
@@ -34,7 +33,11 @@ export default {
       },
     }
   },
-
+  computed:{
+    mentions(){
+      return this.$store.state.media_mentions
+    },
+  },
   methods: {
     larger(mention){
       this.fadeIN = true;
@@ -46,10 +49,6 @@ export default {
       this.enlarge.clicked = false;
       this.fadeIN = false;
     }
-  },
-  mounted(){
-    this.mentions = this.$store.state.media_mentions;
-    console.log('mounted', this.mentions, this.mentions.length);    
   }
 }
 </script>

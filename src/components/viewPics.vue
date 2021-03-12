@@ -1,42 +1,42 @@
-<template style="position: relative" v-model="mediaComment">
-<div class="modal" :style="{'margin-top' : $store.state.scrollY}">
+<template style="position: relative">
+<div class="modal" :style="{'margin-top' : scrollY}">
   <div id="forCenter">
     <button class="close" @click="closeModal()">X</button>
     <div style="clear: both"></div>
 
-      <div class="forFlex flex" v-if="$store.state.clickedMedia">
+      <div class="forFlex flex" v-if="clickedMedia">
         <div id="view">
-          <img id="pic" @load="checkToolarge()" ref="ifToolarge" :class="{tooLarge: ifToolarge.isToolarge === true}" :src="$store.state.clickedMedia.media_url" alt="not found">
+          <img id="pic" @load="checkToolarge()" ref="ifToolarge" :class="{tooLarge: ifToolarge.isToolarge === true}" :src="clickedMedia.media_url" alt="not found">
         </div>
 
         <div id="info">
             <div class="caption text-align">
-              {{$store.state.clickedMedia.caption}}
-              <small>{{$store.state.clickedMedia.timestamp}}</small>
+              {{clickedMedia.caption}}
+              <small>{{clickedMedia.timestamp}}</small>
             </div>
 
             <div class="subInfo flex">
-              <div class="likes">{{$store.state.clickedMedia.like_count}}個讚</div>
+              <div class="likes">{{clickedMedia.like_count}}個讚</div>
                 &nbsp;&nbsp;
-              <div class="comments_count">{{media_comments_count}}個留言</div>
+              <div class="comments_count">{{clickedMedia.comments_count}}個留言</div>
             </div>
 
             <div class="comments">
               <div class="input">
                 <textarea id="pushNew" placeholder="留言" v-model="newComment" @keyup.enter="textAreaResize()"></textarea>
                 <button class="push">
-                  <img src="../assets/sent.png" alt="Not found" @click="pushComment(media)">
+                  <img src="../assets/sent.png" alt="Not found" @click="pushComment(clickedMedia.id)">
                 </button>
               </div>
 
-                <div id="noComment" class="text-align" v-if="$store.state.theMediaComment.length === 0">
+                <div id="noComment" class="text-align" v-if="theMediaComment.length === 0">
                   尚無留言，搶個頭香吧。
                 </div>
 
                 <div class="comment_list" v-else>
                   <section>
                       <transition-group name="comments">
-                      <div class="vistor" v-for="(comment, index) in MediaComment" :key="comment.id">
+                      <div class="vistor" v-for="(comment, index) in theMediaComment" :key="comment.id">
                           <div class="comment">
                             <button class="del" @click="deleteComment(comment, index)">X</button>
                             <h4>{{comment.username}}: {{comment.text}}</h4>
@@ -51,12 +51,12 @@
 
         <div id="seeMore" :style="{'height': mediaHeight + 'px'}">
             <a class="profile flex" @click="closeModal()">
-              <img :src="$store.state.basic.profile_pic" alt="">
-              <span>{{$store.state.basic.userName}}</span>
+              <img :src="basic.profile_pic" alt="">
+              <span>{{basic.userName}}</span>
             </a>
 
             <ul class="otherPics">
-              <li class="pic" v-for="(post, index) in $store.state.media_posts" :key="post.id">
+              <li class="pic" v-for="(post, index) in media_posts" :key="post.id">
                 <img :src="post.media_url" alt="Not found" @click="clickedMedia_change(index)">
               </li>
             </ul>
@@ -77,8 +77,6 @@ export default {
         isToolarge: false,
       },
       imgLoad: false,
-      MediaComment: [],
-      media_comments_count: '',
       newComment: '',
       autoResize: 20,
       handler: {
@@ -87,18 +85,32 @@ export default {
       }
     }
   },
-
+  computed:{
+    clickedMedia(){
+      return this.$store.state.clickedMedia
+    },
+    theMediaComment(){
+      return this.$store.state.theMediaComment
+    },
+    media_posts(){
+      return this.$store.state.media_posts
+    },
+    scrollY(){
+      return this.$store.state.scrollY
+    },
+    basic(){
+      return this.$store.state.basic
+    },
+  },
   methods: {
     checkToolarge(){
         this.imgLoad = true;
         var screenHeight = window.innerHeight;
-        this.ifToolarge.height = this.$refs.ifToolarge.offsetHeight
-        console.log('screenHeight: ', screenHeight, 'mediaHeight: ', this.ifToolarge.height)         
+        this.ifToolarge.height = this.$refs.ifToolarge.offsetHeight     
         if(this.ifToolarge.height > screenHeight){
           this.ifToolarge.isToolarge = true;
         }else{
           this.ifToolarge.isToolarge = false;
-          console.log('No need to resize')
         }        
     },   
 
@@ -124,9 +136,7 @@ export default {
       if(ask){
         this.$store.commit('deleteComment', comment, index)
         this.media_comments_count--;
-      }else{
-          console.log("好險沒刪掉...")
-        }
+      }
     },
 
     closeModal(){
@@ -140,16 +150,9 @@ export default {
       this.$emit('change', index);
     }
   },
-
-  mounted(){
-    this.MediaComment = this.$store.state.theMediaComment;
-    this.media_comments_count = this.$store.state.clickedMedia.comments_count;
-  },
   updated(){   
-    this.MediaComment = this.$store.state.theMediaComment;
-    this.media_comments_count = this.$store.state.clickedMedia.comments_count;
-    if(this.MediaComment.length > 0){
-      this.$store.commit('convertTime', this.MediaComment);
+    if(this.theMediaComment.length > 0){
+      this.$store.commit('convertTime', this.theMediaComment);
     }
   }
 }
@@ -485,23 +488,6 @@ export default {
       margin: 0 5px;
     }
   }
-
-  /* @media screen and (max-width: 770px) {
-    #view{
-      width: 100%!important;
-      padding: 0 0 5vh 0;
-      transition: 0s;
-      margin: 0!important;
-    }
-    .comment{
-      display: block;
-    }
-
-    .close{
-      margin: 7.5vh 0 4px 0;
-      font-size: 1.5rem;
-    }
-  }*/
 
   @media screen and (max-width: 420px) {
     #forCenter{

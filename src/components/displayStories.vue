@@ -1,11 +1,11 @@
 <template style="position: relative">
-<div id="noStory" v-if="Object.keys($store.state.media_stories).length === 0">
+<div id="noStory" v-if="Object.keys(media_stories).length === 0">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 
 <div id="hasStories" v-else @click="pauseClick" @dblclick="goBack">
   
-  <div class="showStory" v-if="sts">
+  <div class="showStory" v-if="media_stories">
     <div class="main">
       <div id="sts">
         <div id="timeCount" class="relative">
@@ -13,14 +13,14 @@
         </div>
         <div class="profile-sts relative">
           <div class="profile">
-            <img :src="$store.state.basic.profile_pic" alt="Not found" style="border-radius: 50%; margin-right: 5px">
+            <img :src="basic.profile_pic" alt="Not found" style="border-radius: 50%; margin-right: 5px">
             <div class="subInfo">
-              {{$store.state.basic.userName}}
-              <small>{{sts[storyIndex].timestamp}}</small>
+              {{basic.userName}}
+              <small>{{media_stories[storyIndex].timestamp}}</small>
             </div>
           </div>
         </div>
-        <img :src="sts[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
+        <img :src="media_stories[storyIndex].media_url" alt="Not found" style="margin-top: -78px"></div>        
       </div>
   </div>
   
@@ -37,10 +37,17 @@ export default {
       timer: null,
       pause: false,
       playstate: 'running',
-      sts: [],
-      sts_length: '', 
+      sts_length: null, 
       storyIndex: 0
     }
+  },
+  computed:{
+    media_stories(){
+      return this.$store.state.media_stories
+    },
+    basic(){
+      return this.$store.state.basic
+    },
   },
   methods: {
     checkStories(){
@@ -49,13 +56,12 @@ export default {
     },
 
     goBack(){
-      this.$store.state.currentLocation = 'post';
+      this.$store.commit('refreash_Posts');  
     },
 
     countDown(){
         this.timer = window.setInterval(() => {
-                    if(this.sts_length === 1 && this.pause === false){ //If there's only one story
-                       console.log(this.sts_length)
+                    if(this.sts_length === 1 && this.pause === false){ //If there's only one story   
                        this.goBack();
                        this.pauseClick();
                     }else if(this.sts_length > 1 && this.pause === false){
@@ -70,24 +76,18 @@ export default {
         window.clearInterval(this.timer);
         this.pause = true;
         this.playstate = 'paused';
-        console.log("pause");
       }else if(this.pause === true){ //resume counting if it is paused
         this.pause = false;
-        console.log("continue");
         this.playstate = 'running';
         this.countDown();
       }
     }
   },
-  mounted(){
-    this.sts = this.$store.state.media_stories
-    this.sts_length = Object.keys(this.sts).length
-    console.log('mounted',this.sts, this.sts_length);
+  created(){
+    this.sts_length = Object.keys(this.media_stories).length
   },
   beforeUpdate(){
-    this.sts = this.$store.state.media_stories
-    this.sts_length = Object.keys(this.sts).length
-    console.log('beforeUpdate',this.sts[0], this.sts_length);
+    this.sts_length = Object.keys(this.media_stories).length
     for(let i=0; i< this.sts_length; i++){
       this.$store.commit('convertTime', this.sts)
     }
