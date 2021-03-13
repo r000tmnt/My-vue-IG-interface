@@ -7,7 +7,7 @@
         'background-position':'center'}" @click="viewing(n)">
         </div>
 
-        <viewPics v-if="isViewing === true"  @close="closeModal($event)" @change="clickedMedia_change($event)"></viewPics>
+        <viewPics v-if="isViewing === true"  @close="closeModal($event)" @changePic="clickedMedia_change($event)"></viewPics>
   </div>
 </div>
 
@@ -47,23 +47,25 @@ export default {
     basic(){
       return this.$store.state.basic
     },
-    scrollY(){
-      return this.$store.state.scrollY
+    Needed(){
+      return this.$store.state.Needed
     },
+    postRefreashed(){
+      return this.$store.state.postRefreashed
+    }
   },
   methods:{
       viewing(n){
-        this.clickedMedia = this.media_posts[n-1] //Push the info of the photo           
+        this.clickedMedia = this.media_posts[n-1] //Push the info of the photo       
         this.getComments(this.clickedMedia).then((resolve) => {
-          resolve.toDo();       
-          if(this.isViewing === true){          
-            this.$parent.modal_open = true;
-            this.scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+          resolve.toDo();
+          this.$store.commit('defineScrollY', document.documentElement.style.getPropertyValue('--scroll-y'))      
+        }).then(()=>{
+          if(this.isViewing === true && this.clickedMedia !== undefined){          
+            this.$parent.modal_open = true; 
             this.addClass = false;
             this.defineScrollbar();            
           }
-        }).then(()=>{
-          this.$store.commit('toClickedMedia', this.clickedMedia);
         })
         .catch(() => {})                  
     },
@@ -77,6 +79,7 @@ export default {
           resolve({
             message: 'Make an api call',
             toDo: function(){
+              vm.$store.commit('toClickedMedia', clickedMedia); 
               vm.$store.dispatch('searchComments', clickedMedia);
               vm.isViewing = true;
             }
@@ -95,10 +98,12 @@ export default {
     },
 
     closeModal(val){
-      this.$parent.modal_open = false;
-      this.isViewing = val.isViewing;
-      this.addClass = val.addClass;
-      this.defineScrollbar();
+      this.waitForRefreash().then(()=>{
+        this.$parent.modal_open = false;
+        this.isViewing = val.isViewing;
+        this.addClass = val.addClass;
+        this.defineScrollbar();
+      })
     },
 
     defineScrollbar(){
@@ -112,9 +117,31 @@ export default {
     },
     
     clickedMedia_change(index){
-      this.clickedMedia = this.media_posts[index];
-      this.$store.commit('toClickedMedia', this.clickedMedia);
-      this.$store.dispatch('searchComments', this.clickedMedia); 
+      this.waitForRefreash().then((resolve) => {
+        resolve.toDo()
+        if(this.postRefreashed === true){
+          this.clickedMedia = this.media_posts[index];
+          this.$store.commit('toClickedMedia', this.clickedMedia);
+          this.$store.dispatch('searchComments', this.clickedMedia); 
+        }
+      })
+    },
+
+    waitForRefreash(){
+      var vm = this;
+      var Needed = {IGid: vm.Needed.IGid, acToken: vm.Needed.acToken}
+      return new Promise((resolve, reject) => {
+        if(!vm.postRefreashed){
+          reject('can not update')
+        }else{
+          resolve({
+            message: 'proceed to api call',
+            toDo: function(){
+              vm.$store.dispatch('getMedias', Needed)
+            }
+          })
+        }
+      })
     }
   }
 }

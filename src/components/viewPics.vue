@@ -25,12 +25,12 @@
               <div class="input">
                 <textarea id="pushNew" placeholder="留言" v-model="newComment" @keyup.enter="textAreaResize()"></textarea>
                 <button class="push">
-                  <img src="../assets/sent.png" alt="Not found" @click="pushComment(clickedMedia.id)">
+                  <img src="../assets/sent.png" alt="Not found" @click="pushComment()">
                 </button>
               </div>
 
                 <div id="noComment" class="text-align" v-if="theMediaComment.length === 0">
-                  尚無留言，搶個頭香吧。
+                  {{noComment.message}}
                 </div>
 
                 <div class="comment_list" v-else>
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <div id="seeMore" :style="{'height': mediaHeight + 'px'}">
+        <div id="seeMore">
             <a class="profile flex" @click="closeModal()">
               <img :src="basic.profile_pic" alt="">
               <span>{{basic.userName}}</span>
@@ -72,6 +72,7 @@ export default {
   name: 'viewPics',
   data(){
     return{
+      noComment:{message: '尚無留言，搶個頭香吧。'},
       ifToolarge : {
         height: null,
         isToolarge: false,
@@ -87,7 +88,7 @@ export default {
   },
   computed:{
     clickedMedia(){
-      return this.$store.state.clickedMedia
+      return this.$store.getters.getClickedMedia
     },
     theMediaComment(){
       return this.$store.state.theMediaComment
@@ -100,7 +101,7 @@ export default {
     },
     basic(){
       return this.$store.state.basic
-    },
+    }
   },
   methods: {
     checkToolarge(){
@@ -122,20 +123,23 @@ export default {
       }
     },
     
-    pushComment(media){
-      var Needed = {id: media.id, message: this.newComment}
+    pushComment(){
+      var Needed = {id: this.clickedMedia.id, message: this.newComment}
       if(this.newComment !== ''){ //Make sure there's something to push
-        this.$store.commit('pushComment', Needed);
+        this.$store.dispatch('pushComment', Needed);
         this.newComment = ''; //Clear 
-        this.media_comments_count++;
+        this.clickedMedia.comments_count++;
+        this.noComment.message = '請稍後。'
       }
     },
 
     deleteComment(comment, index){
       let ask = confirm('您希望刪除 '+comment.text+' 這個留言嗎?')
+       var Needed = {comment: comment, index: index}
       if(ask){
-        this.$store.commit('deleteComment', comment, index)
-        this.media_comments_count--;
+        this.$store.dispatch('deleteComment', Needed)
+        this.clickedMedia.comments_count--;
+        this.noComment.message = '尚無留言，搶個頭香吧。'
       }
     },
 
@@ -147,10 +151,10 @@ export default {
 
     clickedMedia_change(index){
       this.$store.commit('clearComment')
-      this.$emit('change', index);
+      this.$emit('changePic', index);
     }
   },
-  updated(){   
+  updated(){  
     if(this.theMediaComment.length > 0){
       this.$store.commit('convertTime', this.theMediaComment);
     }

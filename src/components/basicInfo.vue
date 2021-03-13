@@ -45,12 +45,6 @@
 <script>
 export default {
   name: 'basicInfo',
-  data(){
-    return{
-      isfetching: true,
-      getData: {} //a place for new datas before send to parent
-    }
-  },
   computed:{
     Needed(){
       return this.$store.state.Needed
@@ -60,101 +54,31 @@ export default {
     },
     currentLocation(){
       return this.$store.state.currentLocation
+    },
+    postRefreashed(){
+      return this.$store.state.postRefreashed
     }
   },
   methods: {
     getStories(){
-      var vm = this;
-      var stories_id = new Array();
-      window.FB.api(
-        this.Needed.IGid,
-        {"fields":"stories", "access_token": this.Needed.acToken},
-          function(sData){
-          //get stories id
-          if(!sData.stories){ //The api can only retrun stories within 24 hours
-            vm.$store.commit('viewStories');
-          }else{
-            var S_id = sData.stories.data;
-
-            if(sData.stories.data){//Make ture there's something
-              for(let i=0; i< S_id.length; i++){
-                stories_id.push(sData.stories.data[i].id);
-              }
-              vm.waitForloop(vm, stories_id)
-              .then((resolve) => {
-                resolve.toDo();
-                
-                if(vm.isfetching === false){
-                  vm.$nextTick(()=>{
-                    vm.$store.dispatch('toStories', vm.getData);
-                  })
-                }
-                vm.isfetching = true;                
-              }).catch(()=>{})             
-            }                  
-          }
-      });
-
+      this.$store.dispatch('getStories')
     },
 
-    waitForloop(vm, stories_id){
-      return new Promise((resolve, reject) => {
-        if(!vm.isfetching){
-          reject('error');
-        }else{
-          resolve({
-            message: 'success',
-            toDo: function(){
-              for(let i=0; i < stories_id.length; i++){ //loop  through each id
-                window.FB.api(
-                stories_id[i],
-                'GET',
-                {"fields":"caption,media_url,timestamp", "access_token": this.Needed.acToken},
-                function(storyData) {
-                  vm.getData[i] = storyData;
-                  console.log(vm.getData[i]);
-                })
-              }
-              vm.isfetching = false;
-            }
-          })
-        }
-      })
+    getTags(){
+      this.$store.dispatch('getTags')
     },
     
-    getTags(){
-      var vm = this;
-      var mentions = [];
-      window.FB.api(
-        this.Needed.IGid+'/tags',
-        'GET',
-        {"fields":"id,username,media_url", "access_token": this.Needed.acToken},
-        function(tagged){
-          for(let i=0; i < tagged.data.length; i++){
-            mentions.push(tagged.data[i]);
-          }
-
-          if(mentions.length > 0){
-            vm.getData = mentions;
-            vm.$nextTick(()=>{
-              vm.$store.dispatch('toMentions', vm.getData);
-            })
-          }        
-        }
-      )
-    },
-
     waitForRefreash(){
-      var vm = this;  
+      var vm = this
+      var Needed = {IGid: vm.Needed.IGid, acToken: vm.Needed.acToken} 
       return new Promise((resolve, reject) => {
-        if(!this.isfetching){
+        if(!vm.postRefreashed){
           reject('error')
         }else{
           resolve({
             message: 'sucess',
             toDo: function(){
-              vm.$parent.getMedias(vm, vm.Needed.IGid, vm.Needed.acToken); 
-              vm.isfetching = false;
+              vm.$store.dispatch('getMedias', Needed)
             }
           })
         }
@@ -164,10 +88,9 @@ export default {
     refreash_Posts(){
       this.waitForRefreash().then((resolve) => {
         resolve.toDo();
-        if(this.isfetching === false){//Wait till api call to finish
+        if(this.postRefreashed === true){//Wait till api call to finish
           this.$store.commit('refreash_Posts');   
         }
-        this.isfetching = true;
       }).catch((reject) => {console.log(reject)})
     }
   },

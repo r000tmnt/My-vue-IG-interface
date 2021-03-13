@@ -8,9 +8,9 @@
     </div>
     <div style="clear: both"></div>
   <basicInfo></basicInfo>
-  <display-medias v-if="currentLocation === 'post'" :urls="media_urls"></display-medias>
+  <display-medias v-if="currentLocation === 'post'"></display-medias>
   <displayStories v-if="currentLocation === 'story'"></displayStories>
-  <displayMention v-if="currentLocation === 'mention'" :mentions="media_mentions"></displayMention>
+  <displayMention v-if="currentLocation === 'mention'"></displayMention>
 
   <footer class="bg_color" :class="{hide_footer: modal_open === true}">&copy; 2021 ParkCorner</footer>
 </template>
@@ -40,59 +40,7 @@ export default {
   },
   methods: {
     getLogin(){
-      window.FB.login(function(logInstatus){
-        console.log(logInstatus);
-      },{scope: 'public_profile, email, business_management, instagram_basic, instagram_content_publish, instagram_manage_comments'})
-    },
-
-    getFBdata(vm, acToken){
-      var FBid;
-       window.FB.api( //need this to get the id
-        '/me/accounts',
-        {"access_token": acToken},
-        function(FBdata) {
-            if(FBdata.data !== null){
-              FBid = FBdata.data[0].id;
-            }
-
-            vm.getIGdata(vm, FBid, acToken);
-            });
-    },
-
-    getIGdata(vm, FBid, acToken){
-      window.FB.api(
-        FBid,
-        {"fields" : "instagram_business_account", "access_token": acToken},
-        function(IGdata){
-          var IGid = IGdata.instagram_business_account.id;
-          vm.$store.state.Needed.IGid = IGid;
-          vm.getBasic(vm, IGid, acToken);
-          vm.getMedias(vm, IGid, acToken);        
-        });
-    },
-
-    getBasic(vm, IGid, acToken){
-      window.FB.api(
-        IGid,
-        {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website", "access_token": acToken},
-          function(basicData){       
-          vm.$store.commit('toBasic', basicData);
-      });
-    },
-
-    getMedias(vm, IGid, acToken){
-      window.FB.api(
-        IGid+"/media",
-        {"fields":"media_url,caption,like_count,comments_count,timestamp", "access_token": acToken},
-        function(src){
-          var pics = new Array();
-              
-          for(let i=0; i < src.data.length; i++){
-            pics.push(src.data[i]);
-            vm.$store.commit('convertTime', pics);
-          }  
-          vm.$store.commit('toPosts', pics);
-        });
+      this.$store.dispatch('getLogin')
     },
 
     scroll(){
@@ -104,7 +52,6 @@ export default {
   },
   created(){
     var vm = this;
-    var acToken
     vm.scroll();
     window.fbAsyncInit = function() {
       window.FB.init({
@@ -114,14 +61,7 @@ export default {
         version    : 'v9.0'
       });
       
-       window.FB.getLoginStatus(function(response){
-         if(response.status === 'connected'){
-            acToken = response.authResponse.accessToken;
-         }
-         vm.$store.state.Needed.acToken = acToken;
-         
-         vm.getFBdata(vm, acToken);
-       });
+      vm.$store.dispatch('getLoginStatus')
     };
 
       (function(d, s, id){
