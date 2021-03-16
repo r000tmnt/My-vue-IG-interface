@@ -83,13 +83,10 @@ export default {
       }
     }
   },
-  created(){
-    this.sts_length = Object.keys(this.media_stories).length
-  },
   beforeUpdate(){
     this.sts_length = Object.keys(this.media_stories).length
     for(let i=0; i< this.sts_length; i++){
-      this.$store.commit('convertTime', this.sts)
+      this.$store.commit('convertTime', this.media_stories)
     }
     if(this.sts_length > 0){//Start counting when there are stories to show
       this.countDown();

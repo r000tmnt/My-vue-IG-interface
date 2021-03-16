@@ -213,11 +213,8 @@ export default createStore({
               context.dispatch('waitForloop', stories_id)
               .then((resolve) => {
                 resolve.toDo();
-                
                 if(context.state.isProcessing === false){
-                  context.$nextTick(()=>{
-                    context.dispatch('toStories', context.state.getData);
-                  })
+                  context.dispatch('toStories', context.state.getData);
                 }
                 context.state.isProcessing = true;                
               }).catch(()=>{})             
@@ -255,23 +252,19 @@ export default createStore({
         resolve.toDo();
         if(context.state.media_stories){
           context.commit('viewStories');
-          context.state.isProcessing = true;
         }        
-      }).catch(() => {
-        context.state.isProcessing = true;
       })
     },
 
     processStories(context, data){
       return new Promise((resolve, reject) => {
-        if(!context.state.isProcessing){
+        if(data === undefined){
           reject('error');
         }else{
           resolve({
             message: 'Proceeding to mutation',
             toDo: function(){
               context.commit('toStories', data);
-              context.state.isProcessing = false;
             }
           })
         }
@@ -285,14 +278,15 @@ export default createStore({
         'GET',
         {"fields":"id,username,media_url", "access_token": context.state.Needed.acToken},
         function(tagged){
-          for(let i=0; i < tagged.data.length; i++){
-            mentions.push(tagged.data[i]);
-          }
-
-          if(mentions.length > 0){
-            context.state.getData = mentions;
-            context.dispatch('toMentions', context.state.getData);
-          }        
+          if(tagged.data){
+            for(let i=0; i < tagged.data.length; i++){
+              mentions.push(tagged.data[i]);
+            }
+            if(mentions.length > 0){
+              context.state.getData = mentions;
+              context.dispatch('toMentions', context.state.getData);
+            }                          
+          }      
         }
       )
     },
