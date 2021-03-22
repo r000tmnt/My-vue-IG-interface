@@ -4,7 +4,7 @@
     <button class="close" @click="closeModal()">X</button>
     <div style="clear: both"></div>
 
-      <main class="forFlex flex" v-if="clickedMedia" :style="{'height': windowHeight + 'px'}">
+      <main class="forFlex flex" v-if="clickedMedia" :style="{'height': windowHeight - 125 + 'px'}">
         <div id="view">
           <img id="pic" @load="checkToolarge()" ref="ifToolarge" :style="{'width': ifToolarge.setValue}" :src="clickedMedia.media_url" alt="not found">
         </div>
@@ -55,7 +55,7 @@
               <span>{{basic.userName}}</span>
             </a>
 
-            <ul class="otherPics" :style="{'height': windowHeight - 69 + 'px'}">
+            <ul class="otherPics" :style="{'height': windowHeight - 195 + 'px'}">
               <li class="pic" v-for="(post, index) in media_posts" :key="post.id">
                 <img :src="post.media_url" alt="Not found" @click="clickedMedia_change(index)">
               </li>
@@ -111,12 +111,21 @@ export default {
         this.ifToolarge.height = this.$refs.ifToolarge.offsetHeight
         if(this.ifToolarge.height > this.windowHeight && this.windowHeight === 760){
           this.ifToolarge.setValue = 606 + 'px';
+          this.checkWindow();
         }     
         else if(this.ifToolarge.height > this.windowHeight){
           this.ifToolarge.setValue = 720 + 'px';
+          this.checkWindow();
         }else{
           this.ifToolarge.setValue = '';
         }
+    },
+
+    checkWindow(){
+      this.windowWidth = window.innerWidth;
+      if(this.windowWidth < 950){
+        this.ifToolarge.setValue = 100 + 'vw';
+      }
     },
 
     textAreaResize(){
@@ -451,10 +460,6 @@ export default {
       transform: unset;
     }
 
-    .close{
-      margin: 1% 2% 1% 1%;
-    }
-
     .caption{
       padding: 2%;
     }
@@ -467,13 +472,14 @@ export default {
       transition: all 0.5s ease;
       width: unset; 
       margin: 0 auto;
-      margin-bottom: -5px;
+      margin: -4.5vh 0 -5px 0;
     }
 
     #view > img{
       transform: unset;
       top: 0;
       left: 0;
+      width: 100vw
     }
 
     #info{
