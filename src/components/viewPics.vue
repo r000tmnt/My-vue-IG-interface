@@ -4,9 +4,9 @@
     <button class="close" @click="closeModal()">X</button>
     <div style="clear: both"></div>
 
-      <div class="forFlex flex" v-if="clickedMedia">
+      <main class="forFlex flex" v-if="clickedMedia" :style="{'height': windowHeight + 'px'}">
         <div id="view">
-          <img id="pic" @load="checkToolarge()" ref="ifToolarge" :class="{tooLarge: ifToolarge.isToolarge === true}" :src="clickedMedia.media_url" alt="not found">
+          <img id="pic" @load="checkToolarge()" ref="ifToolarge" :style="{'width': ifToolarge.setValue}" :src="clickedMedia.media_url" alt="not found">
         </div>
 
         <div id="info">
@@ -55,13 +55,13 @@
               <span>{{basic.userName}}</span>
             </a>
 
-            <ul class="otherPics">
+            <ul class="otherPics" :style="{'height': windowHeight - 69 + 'px'}">
               <li class="pic" v-for="(post, index) in media_posts" :key="post.id">
                 <img :src="post.media_url" alt="Not found" @click="clickedMedia_change(index)">
               </li>
             </ul>
         </div>
-      </div>
+      </main>
   </div>
 </div>
  
@@ -73,9 +73,11 @@ export default {
   data(){
     return{
       noComment:{message: '尚無留言，搶個頭香吧。'},
+      windowHeight: window.innerHeight,
+      windowWidth: window.innerWidth,
       ifToolarge : {
         height: null,
-        isToolarge: false,
+        setValue: '',
       },
       imgLoad: false,
       newComment: '',
@@ -106,14 +108,16 @@ export default {
   methods: {
     checkToolarge(){
         this.imgLoad = true;
-        var screenHeight = window.innerHeight;
-        this.ifToolarge.height = this.$refs.ifToolarge.offsetHeight     
-        if(this.ifToolarge.height > screenHeight){
-          this.ifToolarge.isToolarge = true;
+        this.ifToolarge.height = this.$refs.ifToolarge.offsetHeight
+        if(this.ifToolarge.height > this.windowHeight && this.windowHeight === 760){
+          this.ifToolarge.setValue = 606 + 'px';
+        }     
+        else if(this.ifToolarge.height > this.windowHeight){
+          this.ifToolarge.setValue = 720 + 'px';
         }else{
-          this.ifToolarge.isToolarge = false;
-        }        
-    },   
+          this.ifToolarge.setValue = '';
+        }
+    },
 
     textAreaResize(){
       this.autoResize = this.autoResize+20;
@@ -150,6 +154,7 @@ export default {
     },
 
     clickedMedia_change(index){
+      this.ifToolarge.setValue = '';
       this.$store.commit('clearComment')
       this.$emit('changePic', index);
     }
@@ -224,8 +229,9 @@ export default {
     width: auto;
     height: auto;
     top: 50%;
+    left: 50%;
     position: relative;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
   }
 
   #info{
@@ -263,7 +269,9 @@ export default {
 
   .close{
     background: none;
-    border: none;
+    border: 1px solid;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
     float: right;
     font-size: 1.2rem;
     cursor: pointer;
@@ -271,11 +279,12 @@ export default {
     color: white ;
     position: relative;
     z-index: 2;
+    opacity: 0.5;
   }
 
   .close:hover{
-    border: white;
     background: #232;
+    opacity: 1;
     transition: 0.5s;
   }
 
@@ -377,9 +386,10 @@ export default {
   }
 
   .otherPics{
+    margin-bottom: 0;
     padding: 0 4%;
-    height: 819px;
     overflow-y: scroll;
+    overflow-x: hidden;
   }
 
   .otherPics::-webkit-scrollbar{ /* -webkit-scroll access scroll bar style */ 
@@ -413,7 +423,7 @@ export default {
     transition: opacity .1s ease;
   }
 
-     @media screen and (max-width: 1081px){
+  @media screen and (max-width: 1081px){
      #pushNew{
        width: auto;
      }
@@ -429,11 +439,13 @@ export default {
     .modal{
       width: auto;
       overflow: scroll;
+      overflow-x: hidden;
     }
     
     .forFlex{ /* Switch to portrait, disable various positioning for proper dispaying  */
       flex-direction: column;
       width: auto;
+      height: unset!important;
       top: unset;
       left: unset;
       transform: unset;
@@ -460,15 +472,13 @@ export default {
 
     #view > img{
       transform: unset;
+      top: 0;
+      left: 0;
     }
 
     #info{
       width: 100vw;
     }
-
-     /* .push{
-      width: 32px;
-    }     */
 
     #pushNew{
        width: 51vw;
@@ -477,14 +487,17 @@ export default {
     .profile{
       display: inline-flex;
     }
+
+    .profile > span{
+      margin: 10.5px 0 0 5px;
+    }
     
     .otherPics{
       width: 95vw;
-      height: unset;
+      height: unset!important;
       overflow-y: unset;
       overflow-x: scroll;
       white-space: nowrap;
-      padding: 0 0 0 4%;
     }
 
     .otherPics > .pic{
@@ -495,7 +508,7 @@ export default {
 
   @media screen and (max-width: 420px) {
     #forCenter{
-      margin-top: 6vh;
+      margin-top: 4vh;
     }
 
     #view{

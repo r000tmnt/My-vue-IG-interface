@@ -121,20 +121,23 @@ export default {
 }
 
 .close{
-  border:0; 
   background: none;
-  border: none;
+  border: 1px solid;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
   float: right;
   font-size: 1.2rem;
   cursor: pointer;
-  margin: 1vh 1vh 0 0;
+  margin: 1%;
   color: white ;
+  position: relative;
   z-index: 2;
+  opacity: 0.5;
 }
 
 .close:hover{
-  border: white;
   background: #232;
+  opacity: 1;
   transition: 0.5s;
 }
 
