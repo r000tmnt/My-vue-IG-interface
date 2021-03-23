@@ -61,12 +61,11 @@ export default {
 
     countDown(){
         this.timer = window.setInterval(() => {
-                    if(this.sts_length === 1 && this.pause === false){ //If there's only one story   
-                       this.goBack();
-                       this.pauseClick();
-                    }else if(this.sts_length > 1 && this.pause === false){
-                      this.checkStories();
+                    if( (this.sts_length - 1) === this.storyIndex && this.pause === false){//If there are no more to show
+                      this.goBack();
                       this.pauseClick();
+                    }else{
+                      this.checkStories();
                     }
                   }, 15000);
     },
@@ -158,7 +157,7 @@ center{
 .run{
   border: 1px solid white ;
   background-color: white;
-  animation: countDown 15s;
+  animation: countDown 15s infinite alternate;
 }
 
 .main{

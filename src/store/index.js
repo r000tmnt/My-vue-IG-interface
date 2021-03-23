@@ -110,18 +110,20 @@ export default createStore({
 
     convertTime(state, data){//state is needed for the function to work properly, not sure why though...
       var isArray = Array.isArray(data)//Check if it's an array or not
-
-      if(isArray === true){
-        for(let i=0; i< data.length; i++){//Loop throught each comment as array
-          var theTime = new Date(data[i].timestamp).getTime()
-          var whatTime = new Date(theTime).toDateString();//Convert to human readable time
-          data[i].timestamp = whatTime; //Assign the value
-        }        
-      }else{
-        for(let i=0; i< Object.keys(data).length; i++){//Loop throught each comment as object
-          theTime = new Date(data[i].timestamp).getTime()
-          whatTime = new Date(theTime).toDateString();
-          data[i].timestamp = whatTime; 
+      
+      if(data !== undefined){
+        if(isArray === true){
+          for(let i=0; i< data.length; i++){//Loop throught each comment as array
+            var theTime = new Date(data[i].timestamp).getTime()
+            var whatTime = new Date(theTime).toDateString();//Convert to human readable time
+            data[i].timestamp = whatTime; //Assign the value
+          }        
+        }else{
+          for(let i=0; i< Object.keys(data).length; i++){//Loop throught each comment as object
+            theTime = new Date(data[i].timestamp).getTime()
+            whatTime = new Date(theTime).toDateString();
+            data[i].timestamp = whatTime; 
+          }        
         }        
       }
     }
