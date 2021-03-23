@@ -61,7 +61,7 @@ export default {
 
     countDown(){
         this.timer = window.setInterval(() => {
-                    if( (this.sts_length - 1) === this.storyIndex && this.pause === false){//If there are no more to show
+                    if(this.pause === false && this.storyIndex + 1 === this.sts_length){//If there are no more to show
                       this.goBack();
                       this.pauseClick();
                     }else{
