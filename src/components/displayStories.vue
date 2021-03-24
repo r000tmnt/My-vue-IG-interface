@@ -7,7 +7,7 @@
   
   <div class="showStory" v-if="media_stories">
     <div class="main">
-      <div id="sts">
+      <div id="sts" :style="{'width': setWidth}">
         <div id="timeCount" class="relative">
           <div class="run" :style="{animationPlayState: playstate}"></div>
         </div>
@@ -34,6 +34,8 @@ export default {
   name: 'displayStories',
   data(){
     return{
+      windowHeight: window.innerHeight,
+      setWidth: '',
       timer: null,
       pause: false,
       playstate: 'running',
@@ -50,6 +52,14 @@ export default {
     },
   },
   methods: {
+    checkWindow(){
+      if(this.windowHeight === 760){
+        this.setWidth = 410 + 'px';
+      }else{
+        this.setWidth = 514 + 'px';
+      }
+    },
+
     checkStories(){
       this.storyIndex++;
       this.countDown()//start counting again
@@ -81,6 +91,9 @@ export default {
         this.countDown();
       }
     }
+  },
+  mounted(){
+    this.checkWindow();
   },
   beforeUpdate(){
     this.sts_length = Object.keys(this.media_stories).length
@@ -165,7 +178,6 @@ center{
 }
 
 #sts{
-  width: 514px;
   margin: 0 auto;
   overflow: hidden;
   position: relative;
@@ -225,7 +237,7 @@ small{
   }
 
   #sts{
-    width: unset;
+    width: unset!important;
   }
 }
 </style>
