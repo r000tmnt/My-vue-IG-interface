@@ -1,10 +1,9 @@
 <template style="position: relative">
-<div id="noStory" v-if="Object.keys(media_stories).length === 0">
+<div id="noStory" v-if="sts_length === 0">
   <h1>抱歉。 目前沒有24小時內的限時動態。</h1>
 </div>
 
 <div id="hasStories" v-else @click="pauseClick" @dblclick="goBack">
-  
   <div class="showStory" v-if="media_stories">
     <div class="main">
       <div id="sts" :style="{'width': setWidth}">
@@ -38,14 +37,16 @@ export default {
       setWidth: '',
       timer: null,
       pause: false,
-      playstate: 'running',
-      sts_length: null, 
+      playstate: 'running', 
       storyIndex: 0
     }
   },
   computed:{
     media_stories(){
       return this.$store.state.media_stories
+    },
+    sts_length(){
+      return this.$store.state.sts_length
     },
     basic(){
       return this.$store.state.basic
@@ -70,21 +71,26 @@ export default {
     },
 
     countDown(){
+      if(this.pause === false){
         this.timer = window.setInterval(() => {
-                    if(this.pause === false && this.storyIndex + 1 === this.sts_length){//If there are no more to show
+                    if(this.storyIndex + 1 === this.sts_length){//If there are no more to show
                       this.goBack();
                       this.pauseClick();
                     }else{
                       this.checkStories();
                     }
-                  }, 15000);
+                  }, 15000);                 
+      }else{
+        window.clearInterval(this.timer);
+      }
+
     },
 
     pauseClick(){
       if(this.pause === false){ //pause timer if it is counting
-        window.clearInterval(this.timer);
         this.pause = true;
         this.playstate = 'paused';
+        this.countDown();
       }else if(this.pause === true){ //resume counting if it is paused
         this.pause = false;
         this.playstate = 'running';
@@ -94,16 +100,10 @@ export default {
   },
   mounted(){
     this.checkWindow();
-  },
-  beforeUpdate(){
-    this.sts_length = Object.keys(this.media_stories).length
-    for(let i=0; i< this.sts_length; i++){
-      this.$store.commit('convertTime', this.media_stories)
-    }
     if(this.sts_length > 0){//Start counting when there are stories to show
       this.countDown();
-    }    
-  } 
+    }     
+  }
 }
 </script>
 
@@ -229,15 +229,15 @@ small{
   .main{
     width: auto;
   }
+  
+  #sts{
+    width: unset!important;
+  }
 }
 
 @media screen and (max-width: 420px) {
   .main{
     width: unset;
-  }
-
-  #sts{
-    width: unset!important;
   }
 }
 </style>

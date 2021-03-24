@@ -20,6 +20,7 @@ export default createStore({
       media_posts: [],
 
       media_stories: [],
+      sts_length: null,
 
       media_mentions: [],  
 
@@ -36,7 +37,7 @@ export default createStore({
 
       isProcessing: true,
       postRefreashed: false,
-      getData: {} //a place for new datas before send to parent
+      getData: [] //a place for new datas before send to parent
   },
   getters:{
     getClickedMedia(state){
@@ -218,7 +219,7 @@ export default createStore({
               .then((resolve) => {
                 resolve.toDo();
                 if(context.state.isProcessing === false){
-                  context.dispatch('toStories', context.state.getData);
+                  context.dispatch('toStories', context.state.getData);                 
                 }
                 context.state.isProcessing = true;                
               }).catch(()=>{})             
@@ -235,13 +236,15 @@ export default createStore({
           resolve({
             message: 'success',
             toDo: function(){
+              context.state.sts_length = stories_id.length
               for(let i=0; i < stories_id.length; i++){ //loop  through each id
                 window.FB.api(
                 stories_id[i],
                 'GET',
                 {"fields":"caption,media_url,timestamp", "access_token": context.state.Needed.acToken},
                 function(storyData) {
-                  context.state.getData[i] = storyData;
+                  context.state.getData.push(storyData);
+                  context.commit('convertTime', context.state.getData)
                 })
               }
               context.state.isProcessing = false;
@@ -251,12 +254,12 @@ export default createStore({
       })
     },
 
-    toStories(context, data){
+    toStories(context, data){ 
       context.dispatch('processStories', data).then((resolve) => {
         resolve.toDo();
-        if(context.state.media_stories){
-          context.commit('viewStories');
-        }        
+          if(context.state.sts_length !== 0){
+            context.commit('viewStories');         
+          }                                
       })
     },
 
@@ -267,7 +270,7 @@ export default createStore({
         }else{
           resolve({
             message: 'Proceeding to mutation',
-            toDo: function(){
+            toDo: function(){              
               context.commit('toStories', data);
             }
           })
