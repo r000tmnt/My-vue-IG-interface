@@ -1,7 +1,7 @@
-<template v-model="basic">
+<template>
 <div class="top_frame">
 
-  <div id="banner" :style="{'background-image':'url('+basic.profile_pic+')',
+  <div id="banner" :style="{'background-image':'url('+basic.profile_picture_url+')',
                             'background-size': 'cover','background-position':'center',
                             'filter':'blur(5px)'}">
   </div>
@@ -10,19 +10,19 @@
       <div id="profile" class="flex">
         <div class="profile_pic">
           <a class="section story" :class="{Here: currentLocation === 'story'}" @click="getStories()">
-            <img :src="basic.profile_pic" alt="Not Found">
+            <img :src="basic.profile_picture_url" alt="Not Found">
           </a>
         </div>
           <div class="biography">
-             <h1>{{basic.userName}}</h1>
-            <h4>{{basic.bio}}
-              <a :href="basic.web">{{basic.web}}</a> 
+             <h1>{{basic.username}}</h1>
+            <h4>{{basic.biography}}
+              <a :href="basic.website">{{basic.website}}</a> 
             </h4>
 
             <ul class="counts flex">
-              <li>追蹤:{{basic.follower}}</li>
-              <li>追蹤者:{{basic.followed}}</li>
-              <li>上傳:{{basic.medias}}</li>
+              <li>追蹤:{{basic.followers_count}}</li>
+              <li>追蹤者:{{basic.follows_count}}</li>
+              <li>上傳:{{basic.media_count}}</li>
             </ul>
           </div>
       </div>          
@@ -89,7 +89,8 @@ export default {
       this.waitForRefreash().then((resolve) => {
         resolve.toDo();
         if(this.postRefreashed === true){//Wait till api call to finish
-          this.$store.commit('refreash_Posts');   
+        const place = 'post'
+          this.$store.commit('viewSection', place);   
         }
       }).catch((reject) => {console.log(reject)})
     }

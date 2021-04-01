@@ -32,6 +32,7 @@ export default {
         addClass: false,
         className: 'modal_open',        
         clickedMedia: {},
+        payload: {place: '', data: undefined}
       }
   },
   computed:{
@@ -78,8 +79,8 @@ export default {
         }else{
           resolve({
             message: 'Make an api call',
-            toDo: function(){
-              vm.$store.commit('toClickedMedia', clickedMedia); 
+            toDo: function(){ 
+              vm.$store.commit('toTheBox', vm.payload = {place: 'clicked_Media', data: clickedMedia}); 
               vm.$store.dispatch('searchComments', clickedMedia);
               vm.isViewing = true;
             }
@@ -121,7 +122,7 @@ export default {
         resolve.toDo()
         if(this.postRefreashed === true){
           this.clickedMedia = this.media_posts[index];
-          this.$store.commit('toClickedMedia', this.clickedMedia);
+          this.$store.commit('toTheBox', this.payload = {place: 'clicked_Media', data: this.clickedMedia});
           this.$store.dispatch('searchComments', this.clickedMedia); 
         }
       })

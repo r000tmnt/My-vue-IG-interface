@@ -67,7 +67,8 @@ export default {
     },
 
     goBack(){
-      this.$store.commit('refreash_Posts');  
+      const place = 'post'
+      this.$store.commit('viewSection', place);  
     },
 
     countDown(){

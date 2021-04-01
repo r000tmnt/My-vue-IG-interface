@@ -51,7 +51,7 @@
 
         <div id="seeMore">
             <a class="profile flex" @click="closeModal()">
-              <img :src="basic.profile_pic" alt="">
+              <img :src="basic.profile_picture_url" alt="">
               <span>{{basic.userName}}</span>
             </a>
 

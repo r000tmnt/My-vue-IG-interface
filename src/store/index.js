@@ -2,42 +2,32 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    Needed: {
-      IGid: '',
-      acToken: '',
-    },
+    Needed: { IGid: '', acToken: ''},
+    payload: { place: '', data: undefined},
     
-    basic: {
-      bio: "", 
-      follower: "", 
-      followed: "", 
-      medias: "", 
-      name: "", 
-      profile_pic: "", 
-      userName: "", 
-      web: ""},
+    basic: {},
 
-      media_posts: [],
+    media_posts: [],
 
-      media_stories: [],
-      sts_length: null,
+    media_stories: [],
+    sts_length: 0,
 
-      media_mentions: [],  
+    media_mentions: [],  
 
-      clickedMedia: {},
-      theMediaComment: [],//the comment of the post you clicked 
+    clickedMedia: {},
+    theMediaComment: [],//the comment of the post you clicked 
 
-      currentLocation: 'post',
+    currentLocation: 'post',
 
-      mediaIndex: 9, //defalut number
+    mediaIndex: 9, //defalut number
 
-      fadeIN: false,
+    fadeIN: false,
 
-      scrollY: '',
+    scrollY: '',
 
-      isProcessing: true,
-      postRefreashed: false,
-      getData: [] //a place for new datas before send to parent
+    isProcessing: true,
+    postRefreashed: false,
+    getData: [] //a place for new datas before send to parent
   },
   getters:{
     getClickedMedia(state){
@@ -50,53 +40,25 @@ export default createStore({
       state.Needed.acToken = Needed.acToken
     },
 
-    toBasic(state, basicData){
-        state.basic.bio = basicData.biography;
-        state.basic.follower = basicData.followers_count; 
-        state.basic.followed = basicData.follows_count;
-        state.basic.medias = basicData.media_count;
-        state.basic.name = basicData.name;
-        state.basic.profile_pic = basicData.profile_picture_url;
-        state.basic.userName = basicData.username;
-        state.basic.web = basicData.website;
+    toTheBox(state, payload){
+      if(payload.place === 'basic') { state.basic = payload.data }
+      if(payload.place === 'post') { state.media_posts = payload.data; state.postRefreashed = true }
+      if(payload.place === 'story') { state.media_stories = payload.data }
+      if(payload.place === 'mention') { state.media_mentions = payload.data }
+      if(payload.place === 'clicked_Media') { state.clickedMedia = payload.data }
     },
 
-    toPosts(state, data){
-      state.media_posts = data;
-      state.postRefreashed = true;
-    },
-
-    toStories(state, data){
-      state.media_stories = data;
-    },
-    
-    toMentions(state, data){
-      state.media_mentions = data;
-    },
-
-    toClickedMedia(state, data){
-      state.clickedMedia = data;
-    },
-
-    viewStories(state){
-      state.currentLocation = 'story';
-    },
-    
-    viewMentions(state){
-      state.currentLocation = 'mention';
-    },
-    
-    refreash_Posts(state){
-      state.fadeIN = false;
-      state.currentLocation = 'post';
-      state.mediaIndex = 9; //Reset images    
+    viewSection(state, place){
+      if(place === 'story') { state.currentLocation = 'story'; }
+      if(place === 'mention') { state.currentLocation = 'mention'; }
+      if(place === 'post') { state.currentLocation = 'post'; state.fadeIN = false; state.mediaIndex = 9; }//Reset images
     },
 
     showMore(state){
-      if(state.basic.medias - state.mediaIndex > 9){//if there's more, only reveal next 9 images
+      if(state.basic.media_count - state.mediaIndex > 9){//if there's more, only reveal next 9 images
         state.mediaIndex = state.mediaIndex+9;
       }else{
-        state.mediaIndex = state.basic.medias;//if there's 9 or less, show the rest.
+        state.mediaIndex = state.basic.media_count;//if there's 9 or less, show the rest.
       }
       state.fadeIN = true;
     },
@@ -180,7 +142,7 @@ export default createStore({
         Needed.IGid,
         {"fields":"biography,followers_count,follows_count,media_count,name,profile_picture_url,username,website", "access_token": Needed.acToken},
           function(basicData){       
-          context.commit('toBasic', basicData);
+            context.commit('toTheBox', context.state.payload = {place: 'basic', data: basicData});
       });
     },
 
@@ -195,7 +157,7 @@ export default createStore({
             pics.push(src.data[i]);
             context.commit('convertTime', pics);
           }  
-          context.commit('toPosts', pics);
+          context.commit('toTheBox', context.state.payload = {place: 'post', data: pics});
         });      
     },
 
@@ -207,7 +169,8 @@ export default createStore({
           function(sData){
           //get stories id
           if(!sData.stories){ //The api can only retrun stories within 24 hours
-            context.commit('viewStories');
+            const place = 'story';
+            context.commit('viewSection', place);
           }else{
             var S_id = sData.stories.data;
 
@@ -258,7 +221,8 @@ export default createStore({
       context.dispatch('processStories', data).then((resolve) => {
         resolve.toDo();
           if(context.state.sts_length !== 0){
-            context.commit('viewStories');         
+            const place = 'story'
+            context.commit('viewSection', place);         
           }                                
       })
     },
@@ -270,8 +234,8 @@ export default createStore({
         }else{
           resolve({
             message: 'Proceeding to mutation',
-            toDo: function(){              
-              context.commit('toStories', data);
+            toDo: function(){                         
+              context.commit('toTheBox', context.state.payload = {place: 'story', data: data});
             }
           })
         }
@@ -303,7 +267,8 @@ export default createStore({
         resolve.toDo();
         if(Object.keys(context.state.media_mentions).length > 0){
           context.commit('convertTime', context.state.media_mentions)
-          context.commit('viewMentions');
+          const place = 'mention'
+          context.commit('viewSection', place);
           context.state.isProcessing = true;
         }        
       }).catch(() => {
@@ -319,7 +284,7 @@ export default createStore({
           resolve({
             message: 'Proceeding to mutation',
             toDo: function(){
-              context.commit('toMentions', data);
+              context.commit('toTheBox', context.state.payload = {place: 'mention', data: data});
               context.state.isProcessing = false;
             }
           })
