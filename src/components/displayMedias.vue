@@ -11,7 +11,7 @@
   </div>
 </div>
 
-    <div class="more" v-if="basic.medias !== mediaIndex">
+    <div class="more" v-if="basic.media_count !== mediaIndex">
       <button class="showMore" @click="showMore()">更多</button>
     </div>
 </template>

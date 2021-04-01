@@ -52,7 +52,7 @@
         <div id="seeMore">
             <a class="profile flex" @click="closeModal()">
               <img :src="basic.profile_picture_url" alt="">
-              <span>{{basic.userName}}</span>
+              <span>{{basic.username}}</span>
             </a>
 
             <ul class="otherPics" :style="{'height': windowHeight - 195 + 'px'}">
