@@ -340,7 +340,7 @@ export default createStore({
         {"message": ""+ Needed.message +""},
         function(response){
           context.state.theMediaComment.unshift({id: response.id,
-                                        username: context.state.basic.userName,
+                                        username: context.state.basic.username,
                                         text: Needed.message,
                                         timestamp: theDay})
         }
